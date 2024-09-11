@@ -1,28 +1,7 @@
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
-import java.util.*;
 
-class MyListener extends BinaryBaseListener
-{
-    @Override public void enterLine(BinaryParser.LineContext ctx)
-    {
-        // TODO: investigate contents of 'ctx'
-        System.err.println("enterMyStart()");
-    }
 
-    @Override public void exitLine(BinaryParser.LineContext ctx)
-    {
-        // TODO: investigate contents of 'ctx'
-        System.err.println("exitMyStart()");
-    }
-
-    @Override public void visitTerminal(TerminalNode node)
-    {
-        System.err.println("terminal-node: '" + node.getText() + "'");
-        // TODO: print line+column, token's type, etc.
-    }
-    // TODO: override other methods of 'MyGrammarBaseListener'
-}
 
 public class Main
 {
@@ -33,13 +12,52 @@ public class Main
 
         CommonTokenStream tokens = new CommonTokenStream(lexer);
 
-        // TODO: print the lexer's vocabulary and the actual list of tokens
+        // Prints the lexer's vocabulary up to WHITESPACE
+        Vocabulary vocab = lexer.getVocabulary();
+        for(int i = 0; i < vocab.getMaxTokenType(); i++){
+            System.out.println(vocab.getDisplayName(i));
+        }
+        System.out.println("Tokens: " + tokens.getText());
 
         BinaryParser parser = new BinaryParser(tokens);
 
         ParseTree tree = parser.line();
 
-        MyListener m = new MyListener();
+        MainBinaryListener m = new MainBinaryListener(vocab);
         ParseTreeWalker.DEFAULT.walk(m, tree);
     }
+}
+
+final class MainBinaryListener extends BinaryBaseListener
+{
+
+    // we pass the vocabulary to the listener from the lexer in Main
+    private final Vocabulary _vocab;
+    MainBinaryListener(Vocabulary vocab){
+        _vocab = vocab;
+    }
+
+    @Override public void enterLine(BinaryParser.LineContext ctx)
+    {
+        // TODO: investigate contents of 'ctx'
+        System.out.println(ctx.getText());
+    }
+
+    @Override public void exitLine(BinaryParser.LineContext ctx)
+    {
+
+        // TODO: investigate contents of 'ctx'
+        System.out.println("Exiting Line " + ctx.getText());
+    }
+
+    // we use the vocab here to get the symbolic name for the rule number
+    @Override public void visitTerminal(TerminalNode node)
+    {
+
+        System.out.println("Line: " + node.getSymbol().getLine()
+                + ' '
+                + '|' + " Type: " + _vocab.getSymbolicName(node.getSymbol().getType()));
+        // TODO: print line+column, token's type, etc.
+    }
+    // TODO: override other methods of 'MyGrammarBaseListener'
 }
