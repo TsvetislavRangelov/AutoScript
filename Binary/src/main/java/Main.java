@@ -40,12 +40,7 @@ final class MainBinaryListener extends BinaryBaseListener
 
     @Override public void enterLine(BinaryParser.LineContext ctx)
     {
-        System.out.println("Input line(s): " + ctx.getText());
-        int additions = countAdditions(ctx.getText());
-        System.out.println("Addition count: " + additions);
-
-        int highestNumber = getLargestNumber(ctx.getText());
-        System.out.println("Largest integer is: " + highestNumber);
+        displayInfo(ctx.getText());
     }
 
     @Override public void exitLine(BinaryParser.LineContext ctx)
@@ -66,6 +61,20 @@ final class MainBinaryListener extends BinaryBaseListener
         System.out.println("Line: " + lineNumber
                 + ' '
                 + '|' + " Type: " + symbolicName);
+    }
+
+    /**
+     * Displays the number of addition (+) operations,
+     * as well as the highest integer in the parse line.
+     * @param parseLine the line the parser is reading.
+     */
+    private void displayInfo(String parseLine){
+        System.out.println("Input line(s): " + parseLine);
+        int additions = countAdditions(parseLine);
+        System.out.println("Addition count: " + additions);
+
+        int highestNumber = getLargestNumber(parseLine);
+        System.out.println("Largest integer is: " + highestNumber);
     }
 
     /**
