@@ -12,19 +12,21 @@ public class Main
 
         // Prints the lexer's vocabulary up to WHITESPACE
         Vocabulary vocab = lexer.getVocabulary();
-        System.out.println("Lexer vocabulary: ");
+        System.out.println("\033[1mLexer vocabulary:\033[0m");
         // we start looping from 1 since token enumeration starts from 1.
         for(int i = 1; i < vocab.getMaxTokenType(); i++){
             System.out.println(vocab.getDisplayName(i));
         }
 
+        System.out.println();
+
         BinaryParser parser = new BinaryParser(tokens);
 
-        ParseTree tree = parser.line();
+        ParseTree start = parser.start();
 
         // we pass the vocab to the listener.
         MainBinaryListener m = new MainBinaryListener(vocab);
-        ParseTreeWalker.DEFAULT.walk(m, tree);
+        ParseTreeWalker.DEFAULT.walk(m, start);
     }
 }
 
@@ -45,7 +47,8 @@ final class MainBinaryListener extends BinaryBaseListener
 
     @Override public void exitLine(BinaryParser.LineContext ctx)
     {
-        System.out.println("Exiting Line " + ctx.getText());
+        System.out.println("\033[1mExiting Line\033[0m " + ctx.getText());
+        System.out.println();
     }
 
     /**
@@ -69,12 +72,13 @@ final class MainBinaryListener extends BinaryBaseListener
      * @param parseLine the line the parser is reading.
      */
     private void displayInfo(String parseLine){
-        System.out.println("Input line(s): " + parseLine);
+        System.out.println("\033[1mInput line(s):\033[0m " + parseLine);
         int additions = countAdditions(parseLine);
-        System.out.println("Addition count: " + additions);
+        System.out.println("\033[1mAddition count:\033[0m " + additions);
 
         int highestNumber = getLargestNumber(parseLine);
-        System.out.println("Largest integer is: " + highestNumber);
+        System.out.println("\033[1mLargest integer is:\033[0m " + highestNumber);
+        System.out.println();
     }
 
     /**
@@ -102,7 +106,7 @@ final class MainBinaryListener extends BinaryBaseListener
 
     /**
      * Counts the additions in a line.
-     * @param line The line containing the expression(s).
+     * @param line The line containing the expression.
      * @return The number of additions
      */
     private int countAdditions(String line){
@@ -114,4 +118,5 @@ final class MainBinaryListener extends BinaryBaseListener
         }
         return result;
     }
+
 }
