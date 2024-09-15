@@ -2,15 +2,24 @@ grammar Binary;
 
 // Parser Rules
 
-line:		expr+ EOF;
+start:          (line+) + EOF;
 
-expr:		expr binary_op expr | INTEGER; // this rule is left recursive
+line:		    expr + line_separator;
 
-binary_op:	BINARY_OP;	
+expr:		    expr binary_op expr | INTEGER; // this rule is left recursive
+
+binary_op:	    BINARY_OP;	
+
+line_separator: LINE_SEPARATOR;
 
 // Lexer Rules
 
-BINARY_OP:	'*' | '/' | '+' | '-' | '~' | '&&' | 'v' | '<<'; // v = XOR, ~ = NOT
-INTEGER:	[0-9]+;
+BINARY_OP:	    '*' | '/' | '+' | '-' | '~' | 'v' | '<<'; // v = XOR, ~ = NOT
 
-WHITESPACE:	[ \t\r\n]+ -> skip;
+LINE_SEPARATOR: ';';
+
+INTEGER:	    [0-9]+;
+
+COMMENT:        '//' ~[\r\n]* -> skip;
+
+WHITESPACE:	    [ \t\r\n]+ -> skip;
