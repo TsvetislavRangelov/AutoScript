@@ -32,8 +32,14 @@ public class Main
         ParseTree start = parser.start();
 
         // we pass the vocab to the listener.
-        MainBinaryListener m = new MainBinaryListener(vocab);
-        ParseTreeWalker.DEFAULT.walk(m, start);
+        // MainBinaryListener m = new MainBinaryListener(vocab);
+        //ParseTreeWalker.DEFAULT.walk(m, start);
+
+
+        // we pass the vocab to the visitor.
+        MainBinaryVisitor visitor = new MainBinaryVisitor(vocab);
+        visitor.visit(start);
+        
     }
 }
 
@@ -204,5 +210,70 @@ final class MainBinaryListener extends BinaryBaseListener {
             default:
                 return 0;                          
           }       
+    }
+}
+
+final class MainBinaryVisitor extends BinaryBaseVisitor<Integer> {
+
+    private final Vocabulary _vocab;
+    MainBinaryVisitor(Vocabulary vocab) {
+        _vocab = vocab;
+    }
+
+    @Override
+    public Integer visitLine(BinaryParser.LineContext ctx) {
+        if(ctx.variable_expr() != null || ctx.expr().size() > 0 ){
+            System.out.print(ctx.expr().size());
+            displayInfo(ctx.getText());
+        }
+        return super.visitLine(ctx);
+    }
+
+    /**
+     * Counts the additions in a line.
+     * @param line The line containing the expression.
+     * @return The number of additions
+     */
+    private int countAdditions(String line) {
+        int result = 0;
+        for(char c : line.toCharArray()){
+            if(c == '+'){
+                result++;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Gets the largest integer from a list of integers.
+     * @param expression The expression we're parsing.
+     * @return The highest integer in the list
+     */
+    private int getLargestNumber(String expression) {
+        int highest = 0;
+        if(expression.isEmpty()){
+            return highest;
+        }
+        // we need only the numbers from within the expression.
+        String[] numbers = expression.split("[^0-9]+");
+        for(String number : numbers){
+            if(!number.isEmpty()){
+                int curr = Integer.parseInt(number);
+                if(curr > highest){
+                    highest = curr;
+                }
+            }
+        }
+        return highest;
+    }
+
+    private void displayInfo(String parseLine) {
+        System.out.println("\033[1mInput line(s):\033[0m " + parseLine);
+        int additions = countAdditions(parseLine);
+        System.out.println("\033[1mAddition count:\033[0m " + additions);
+
+        int highestNumber = getLargestNumber(parseLine);
+        System.out.println("\033[1mLargest integer is:\033[0m " + highestNumber);
+        System.out.println();
     }
 }
