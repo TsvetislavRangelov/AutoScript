@@ -1,0 +1,121 @@
+[1mLexer vocabulary:[0m
+';'
+'('
+')'
+'^'
+'~'
+'<<'
+'*'
+'/'
+'-'
+'+'
+'='
+'print'
+ID
+BINARY_NUM
+COMMENT
+
+------------------------------------
+Processing line: ~101;
+Addition count: 0
+Largest binary number is: 101
+Calculating ...
+~ 101=11111111111111111111111111111010
+Line: 1 | Type: LINE_SEPARATOR
+------------------------------------
+Processing line: 101-100;
+Addition count: 0
+Largest binary number is: 101
+Calculating ...
+101 - 100 = 1
+Line: 2 | Type: LINE_SEPARATOR
+------------------------------------
+Processing line: 1010+100;
+Addition count: 1
+Largest binary number is: 1010
+Calculating ...
+1010 + 100 = 1110
+Line: 3 | Type: LINE_SEPARATOR
+------------------------------------
+Processing line: (1010+10)*101;
+Addition count: 1
+Largest binary number is: 1010
+Calculating ...
+1010 + 10 = 1100
+(1010+10) * 101 = 111100
+Line: 4 | Type: LINE_SEPARATOR
+------------------------------------
+Processing line: 10001/10;
+Addition count: 0
+Largest binary number is: 10001
+Calculating ...
+10001 / 10 = 1000
+Line: 5 | Type: LINE_SEPARATOR
+------------------------------------
+Processing line: 101010*1011;
+Addition count: 0
+Largest binary number is: 101010
+Calculating ...
+101010 * 1011 = 111001110
+Line: 6 | Type: LINE_SEPARATOR
+------------------------------------
+Processing line: 101011*101/111;
+Addition count: 0
+Largest binary number is: 101011
+Calculating ...
+101011 * 101 = 11010111
+101011*101 / 111 = 11110
+Line: 7 | Type: LINE_SEPARATOR
+------------------------------------
+Processing line: (10+1111)/10;
+Addition count: 1
+Largest binary number is: 1111
+Calculating ...
+10 + 1111 = 10001
+(10+1111) / 10 = 1000
+Line: 8 | Type: LINE_SEPARATOR
+------------------------------------
+Processing line: 1010^111;
+Addition count: 0
+Largest binary number is: 1010
+Calculating ...
+1010 XOR 111 = 1101
+Line: 9 | Type: LINE_SEPARATOR
+------------------------------------
+Processing line: 10*1011<<10;
+Addition count: 0
+Largest binary number is: 1011
+Calculating ...
+1011 << 10 = 101100
+10 * 1011<<10 = 1011000
+Line: 10 | Type: LINE_SEPARATOR
+------------------------------------
+Processing line: 1011<<10;
+Addition count: 0
+Largest binary number is: 1011
+Calculating ...
+1011 << 10 = 101100
+Line: 11 | Type: LINE_SEPARATOR
+------------------------------------
+111 + 1101 = 10100
+110 / 10 = 11
+111+1101 - 110/10 = 10001
+Value of a is 10001
+Line: 14 | Type: LINE_SEPARATOR
+------------------------------------
+Value of b is 101
+Line: 15 | Type: LINE_SEPARATOR
+------------------------------------
+a + b = 10110
+Value of c is 10110
+Line: 16 | Type: LINE_SEPARATOR
+------------------------------------
+print(a):   10001
+Line: 19 | Type: LINE_SEPARATOR
+------------------------------------
+print(b):   101
+Line: 20 | Type: LINE_SEPARATOR
+------------------------------------
+print(c):   10110
+Line: 21 | Type: LINE_SEPARATOR
+Line: 22 | Type: EOF

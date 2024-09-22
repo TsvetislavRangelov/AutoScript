@@ -2,20 +2,24 @@ grammar Binary;
 
 // Parser Rules
 
-start:           (line+) + EOF;
+start:          (line+) + EOF;
 
-line:		     expr + line_separator | variable | variable_expr | print;
+line:		    (expr | assignment | print) + line_separator;
 
-expr:		     opening_bracket expr binary_op expr closing_bracket | 
-                 expr binary_op expr |
-                 binary_num; // this rule is left recursive
+print:          PRINT identifier;
 
+expr:	        binary_num # Number | 
+                identifier # Variable  |
+		        TILDE right=expr # Negation |
+                left=expr operator=SHIFT right=expr # BitShift |				
+		        left=expr operator=XOR  right=expr  # ExclusiveOr |
+		        OPENING_BRACKET inner=expr CLOSING_BRACKET # Parentheses |
+		        left=expr operator=(TIMES | SLASH) right=expr # MultiplicationDivision |
+		        left=expr operator=(MINUS | PLUS) right=expr # AdditionSubtraction ; 	  // this rule is left recursive
 
-print:           PRINT + variable_name + line_separator;
+assignment:      identifier EQUALITY expr;
 
-variable:        variable_name + equality + binary_num + line_separator;
-
-variable_expr:   variable_name + binary_op + variable_name + equality variable_name + line_separator;
+identifier:      ID;
 
 line_separator:  LINE_SEPARATOR;
 
@@ -23,30 +27,38 @@ opening_bracket: OPENING_BRACKET;
 
 closing_bracket: CLOSING_BRACKET; 
 
-variable_name:   VARIABLE_NAME;
-
-binary_op:	     BINARY_OP;
+variable_name:   ID;
 
 binary_num:      BINARY_NUM;
-
-equality:        EQUALITY; 
 
 
 // Lexer Rules
 
-BINARY_OP:	    '*' | '/' | '+' | '-' | '~' | 'v' | '<<'; // v = XOR, ~ = NOT
+LINE_SEPARATOR:   ';';
 
-LINE_SEPARATOR: ';';
+OPENING_BRACKET:  '(';
 
-OPENING_BRACKET: '(';
+CLOSING_BRACKET:  ')';
 
-CLOSING_BRACKET: ')'; 
+XOR:            '^';
 
-EQUALITY:        '=';
+TILDE:            '~';
+
+SHIFT:            '<<';
+
+TIMES:             '*';
+
+SLASH:            '/';
+
+MINUS:            '-';
+
+PLUS:             '+';
+
+EQUALITY:         '=';
 
 PRINT:           'print';
 
-VARIABLE_NAME:   [a-z]+; 
+ID:              [a-z]+[A-Z]?[0-9]?; 
 
 BINARY_NUM:	     [0-1]+;
 
