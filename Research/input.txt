@@ -1,0 +1,6 @@
+5 + 9; 
+integer a = 5; 
+string b = "hi"; 
+boolean isSunny = false; 
+boolean isCl0ud6 = true;
+character m  = 'm';
