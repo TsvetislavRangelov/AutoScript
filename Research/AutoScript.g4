@@ -28,7 +28,7 @@ whileStatement: 	WHILE OPENING_BRACKET condition CLOSING_BRACKET
 forStatement: 		FOR OPENING_BRACKET assignmentExpression COMMA condition COMMA (singleExpression| assignmentExpression)
 					CLOSING_BRACKET OPENING_CURLY_BRACKET body+ CLOSING_CURLY_BRACKET;
 
-body: singleExpression | assignmentExpression | ifStatement | whileStatement | forStatement;
+body: (singleExpression | assignmentExpression | ifStatement | whileStatement | forStatement) + LINE_SEPARATOR; 
 
 condition:      ID # ConditionID| 
 				singleExpression #ConditionExpr|

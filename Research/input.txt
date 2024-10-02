@@ -11,58 +11,54 @@ integer sum = 0;
 :)7+7;
 :)20-15/4*3;
 a = b;
-if (1 > 3) {2+3};
-if (1 > 3) {a+b};
-if(4<2){
-    a+7/3*4
-}
-else{ 
-    6 + 3
-};
 
 if(3<4){
-    a+b
+    n = 2+4; 
 } 
 else if (a > 5){
-    c+d
+    k = 4; 
 } 
 else if (8>3){
-    3+6
+    b =a + b; 
 } 
 else {
-    m+d
+    n = 4 + 3;
 };
 
 if (a) {
-    b
+    b = 4+4;
 };
 
 if(a) {
     if (b) {
-        c
+        b = 2; 
     } 
 else {
-    m
-    }
+    m = 6; 
+    };
 };
 
 while (a) {
-    a = a + 7 /3 
-    };
-
-for (integer a = 0, a <10, a = a + 1) {
-    m = n + 1
+    a = a + 7 /3;
 };
 
-if (a + b > 5 && a + c == 3 && c < 9 || c + 2 == 4  || n != false) { a + c};
+for (integer a = 0, a < 10, a = a + 1) {
+    m = n + 1;
+};
 
-const doSmt : void = () => {a+b};
+if (a + b > 5 && a + c == 3 && c < 9 || c + 2 == 4  || n != false) {
+    m = a + c;
+};
+
+const doSmt : void = () => {
+    a = a+b;
+};
 
 const doStmElse: integer = (integer a, boolean m) => {
-    integer c = 0
+    integer c = 0;
     if (m){
-        c = a + 5
+        c = a + 5;
     }else {
-        c = a + 6 
-    }
+        c = a + 6;
+    };
 };
