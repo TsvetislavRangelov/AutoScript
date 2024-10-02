@@ -2,19 +2,50 @@ grammar AutoScript;
 
 // Parser Rules
 
+entry: ((singleExpression | assignmentExpression | ifStatement| whileStatement | forStatement | arrowFunction) + LINE_SEPARATOR)+ | EOF; 
 
-entry: ((singleExpression | assignmentExpression) + LINE_SEPARATOR)+ | EOF; 
-
-assignmentExpression: TYPE ID EQUALS (NUMBER_LITERAL | STRING_LITERAL | CHARACTER_LITERAL | BOOLEAN_LITERAL); 
+assignmentExpression: TYPE? ID EQUALS (NUMBER_LITERAL | STRING_LITERAL | CHARACTER_LITERAL | BOOLEAN_LITERAL| ID | singleExpression); 
 
 singleExpression:   NUMBER_LITERAL # Number | 
                     ID # Variable  |
 		            TILDE right=singleExpression # Negation |
 		            left=singleExpression operator=CARET  right=singleExpression  # ExclusiveOr |
+					left=singleExpression operator=LESS_THAN  right=singleExpression  # LessThan |
+					left=singleExpression operator=GREATER_THAN  right=singleExpression  # Greater_Than |
 		            OPENING_BRACKET inner=singleExpression CLOSING_BRACKET # Parentheses |
 		            left=singleExpression operator=(TIMES | SLASH) right=singleExpression # MultiplicationDivision |
 		            left=singleExpression operator=(MINUS | PLUS) right=singleExpression # AdditionSubtraction ; 	  // this rule is left recursive
 
+ifStatement: 		IF OPENING_BRACKET condition CLOSING_BRACKET 
+						OPENING_CURLY_BRACKET body+ CLOSING_CURLY_BRACKET
+					(ELSE IF OPENING_BRACKET condition CLOSING_BRACKET
+						OPENING_CURLY_BRACKET body+ CLOSING_CURLY_BRACKET)*
+					(ELSE OPENING_CURLY_BRACKET body+ CLOSING_CURLY_BRACKET)?;
+
+whileStatement: 	WHILE OPENING_BRACKET condition CLOSING_BRACKET 
+					OPENING_CURLY_BRACKET body+ CLOSING_CURLY_BRACKET;	
+
+forStatement: 		FOR OPENING_BRACKET assignmentExpression COMMA condition COMMA (singleExpression| assignmentExpression)
+					CLOSING_BRACKET OPENING_CURLY_BRACKET body+ CLOSING_CURLY_BRACKET;
+
+body: singleExpression | assignmentExpression | ifStatement | whileStatement | forStatement;
+
+condition:      ID # ConditionID| 
+				singleExpression #ConditionExpr|
+				BOOLEAN_LITERAL #ConditionBoolean|
+				OPENING_BRACKET inner=condition CLOSING_BRACKET #ConditionBrackets|
+				left=condition operator=AND right=condition # And |
+				left=condition operator=OR right=condition  # Or |
+				left=condition operator=STRICT_EQUALS right=condition # StringEqual |
+				left=condition operator=NOT_EQUALS right=condition # NotEqual; 
+
+arrowFunction: CONST ID ':' (TYPE | VOID) EQUALS OPENING_BRACKET paramSequence? CLOSING_BRACKET ARROW 
+				OPENING_CURLY_BRACKET body+ CLOSING_CURLY_BRACKET;
+
+
+paramSequence: param (COMMA param)*;
+
+param: 		TYPE ID; 
 
 // Lexer rules
 // Keywords
@@ -23,9 +54,17 @@ FOR:            'for';
 
 WHILE:          'while';
 
+BREAK: 			'break';
+
+RETURN: 		'return';
+
+VOID: 			'void';
+
 IF:             'if';
 
 ELSE:           'else';
+
+CONST: 			'const';
 
 TYPE:           INTEGER_TYPE |
                 STRING_TYPE |
@@ -48,6 +87,10 @@ OPENING_BRACKET:  '(';
 
 CLOSING_BRACKET:  ')';
 
+OPENING_CURLY_BRACKET: '{';
+
+CLOSING_CURLY_BRACKET: '}';
+
 CARET:            '^';
 
 TILDE:            '~';
@@ -65,6 +108,19 @@ MINUS:            '-';
 PLUS:             '+';
 
 EQUALS:           '=';
+
+STRICT_EQUALS:    '==';
+
+NOT_EQUALS: 	  '!=';
+
+AND: 			  '&&';
+
+OR: 			  '||';
+
+ARROW: 			  '=>';
+
+COMMA: 			  ',';
+
 
 //Type literals
 
@@ -85,6 +141,5 @@ fragment ESCAPE_SEQUENCE: 	'\\' ['"?abfnrtv\\];
 COMMENT:         ':)' ~[\r\n]* -> skip;
 
 ID:		 [a-zA-Z][a-zA-Z0-9]*;
-
 
 WHITESPACE:	     [ \t\r\n]+ -> skip;

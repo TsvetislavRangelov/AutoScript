@@ -5,3 +5,64 @@ boolean isSunny = false;
 boolean isCl0ud6 = true;
 character p = 'p';
 :)character m  = 'mm';
+a=7;
+c = 1+2;
+integer sum = 0; 
+:)7+7;
+:)20-15/4*3;
+a = b;
+if (1 > 3) {2+3};
+if (1 > 3) {a+b};
+if(4<2){
+    a+7/3*4
+}
+else{ 
+    6 + 3
+};
+
+if(3<4){
+    a+b
+} 
+else if (a > 5){
+    c+d
+} 
+else if (8>3){
+    3+6
+} 
+else {
+    m+d
+};
+
+if (a) {
+    b
+};
+
+if(a) {
+    if (b) {
+        c
+    } 
+else {
+    m
+    }
+};
+
+while (a) {
+    a = a + 7 /3 
+    };
+
+for (integer a = 0, a <10, a = a + 1) {
+    m = n + 1
+};
+
+if (a + b > 5 && a + c == 3 && c < 9 || c + 2 == 4  || n != false) { a + c};
+
+const doSmt : void = () => {a+b};
+
+const doStmElse: integer = (integer a, boolean m) => {
+    integer c = 0
+    if (m){
+        c = a + 5
+    }else {
+        c = a + 6 
+    }
+};
