@@ -12,18 +12,18 @@ integer sum = 0;
 :)20-15/4*3;
 a = b;
 
-if(3<4){
-    n = 2+4; 
-} 
-else if (a > 5){
-    k = 4; 
-} 
-else if (8>3){
-    b =a + b; 
-} 
-else {
-    n = 4 + 3;
-};
+:)if(3<4){
+:)    n = 2+4; 
+:)} 
+:)else if (a > 5){
+:)    k = 4; 
+:)} 
+:)else if (8>3){
+:)    b =a + b; 
+:)} 
+:)else {
+:)   n = 4 + 3;
+:)};
 
 if (a) {
     b = 4+4;
@@ -62,3 +62,8 @@ const doStmElse: integer = (integer a, boolean m) => {
         c = a + 6;
     };
 };
+
+
+integer[] nums = [36];
+string[] strings = ["hi", "bye"];
+boolean [] buls = [];

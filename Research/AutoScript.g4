@@ -2,9 +2,11 @@ grammar AutoScript;
 
 // Parser Rules
 
-entry: ((singleExpression | assignmentExpression | ifStatement| whileStatement | forStatement | arrowFunction) + LINE_SEPARATOR)+ | EOF; 
+entry: ((collectionAssignment | singleExpression | assignmentExpression | ifStatement| whileStatement | forStatement | arrowFunction) + LINE_SEPARATOR)+ | EOF; 
 
 assignmentExpression: TYPE? ID EQUALS (NUMBER_LITERAL | STRING_LITERAL | CHARACTER_LITERAL | BOOLEAN_LITERAL| ID | singleExpression); 
+
+collectionAssignment: TYPE '[]' ID EQUALS ('[' (NUMBER_LITERAL (COMMA NUMBER_LITERAL)* | STRING_LITERAL (COMMA STRING_LITERAL)* | CHARACTER_LITERAL (COMMA CHARACTER_LITERAL)* | BOOLEAN_LITERAL (COMMA BOOLEAN_LITERAL)*) ']' | '[]');
 
 singleExpression:   NUMBER_LITERAL # Number | 
                     ID # Variable  |
