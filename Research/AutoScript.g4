@@ -2,13 +2,12 @@ grammar AutoScript;
 
 // Parser Rules
 
-entry: ((collectionAssignment | singleExpression | assignmentExpression | ifStatement| whileStatement | forStatement | arrowFunction) + LINE_SEPARATOR)+ | EOF; 
+entry: ((singleExpression | assignmentExpression | ifStatement| whileStatement | forStatement | arrowFunction) + LINE_SEPARATOR)+ | EOF; 
 
-assignmentExpression: TYPE? ID EQUALS (NUMBER_LITERAL | STRING_LITERAL | CHARACTER_LITERAL | BOOLEAN_LITERAL| ID | singleExpression); 
-
-collectionAssignment: TYPE '[]' ID EQUALS ('[' (NUMBER_LITERAL (COMMA NUMBER_LITERAL)* | STRING_LITERAL (COMMA STRING_LITERAL)* | CHARACTER_LITERAL (COMMA CHARACTER_LITERAL)* | BOOLEAN_LITERAL (COMMA BOOLEAN_LITERAL)*) ']' | '[]');
-
-singleExpression:   NUMBER_LITERAL # Number | 
+singleExpression:   NUMBER_LITERAL # Number |
+                    STRING_LITERAL # String |
+                    CHARACTER_LITERAL # Character |
+                    BOOLEAN_LITERAL # Boolean |
                     ID # Variable  |
 		            TILDE right=singleExpression # Negation |
 		            left=singleExpression operator=CARET  right=singleExpression  # ExclusiveOr |
@@ -17,6 +16,10 @@ singleExpression:   NUMBER_LITERAL # Number |
 		            OPENING_BRACKET inner=singleExpression CLOSING_BRACKET # Parentheses |
 		            left=singleExpression operator=(TIMES | SLASH) right=singleExpression # MultiplicationDivision |
 		            left=singleExpression operator=(MINUS | PLUS) right=singleExpression # AdditionSubtraction ; 	  // this rule is left recursive
+
+assignmentExpression: TYPE? ID EQUALS (singleExpression);
+
+
 
 ifStatement: 		IF OPENING_BRACKET condition CLOSING_BRACKET 
 						OPENING_CURLY_BRACKET body+ CLOSING_CURLY_BRACKET

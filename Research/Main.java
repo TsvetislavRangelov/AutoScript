@@ -1,9 +1,9 @@
+
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.Vocabulary;
-
 import org.antlr.v4.runtime.tree.ParseTree;
+
 
 public class Main
 {
@@ -15,12 +15,9 @@ public class Main
         AutoScriptParser parser = new AutoScriptParser(tokens);
 
         ParseTree start = parser.entry();
-
-        
-        AutoScriptVisitor visitor = new AutoScriptBaseVisitor();
+        MainAutoScriptVisitor visitor = new MainAutoScriptVisitor();
         visitor.visit(start);
     }
-
-
-
 }
+
+
