@@ -2,7 +2,7 @@ grammar AutoScript;
 
 // Parser Rules
 
-entry: ((singleExpression | assignmentExpression | ifStatement| whileStatement | forStatement | arrowFunction) + LINE_SEPARATOR)+ | EOF; 
+entry: ((singleExpression | assignmentExpression | collectionAssignment | ifStatement | whileStatement | forStatement | arrowFunction) + LINE_SEPARATOR)+ | EOF;
 
 singleExpression:   NUMBER_LITERAL # Number |
                     STRING_LITERAL # String |
@@ -19,6 +19,7 @@ singleExpression:   NUMBER_LITERAL # Number |
 
 assignmentExpression: TYPE? ID EQUALS (singleExpression);
 
+collectionAssignment: TYPE '[]' ID EQUALS ('[' (NUMBER_LITERAL (COMMA NUMBER_LITERAL)* | STRING_LITERAL (COMMA STRING_LITERAL)* | CHARACTER_LITERAL (COMMA CHARACTER_LITERAL)* | BOOLEAN_LITERAL (COMMA BOOLEAN_LITERAL)*) ']' | '[]');
 
 
 ifStatement: 		IF OPENING_BRACKET condition CLOSING_BRACKET 
