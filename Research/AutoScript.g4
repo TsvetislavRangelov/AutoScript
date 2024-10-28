@@ -42,10 +42,10 @@ condition:      ID # ConditionID|
 				singleExpression #ConditionExpr|
 				BOOLEAN_LITERAL #ConditionBoolean|
 				OPENING_BRACKET inner=condition CLOSING_BRACKET #ConditionBrackets|
-				left=condition operator=AND right=condition # ConditionAnd |
-				left=condition operator=OR right=condition  # ConditionOr |
 				left=condition operator=STRICT_EQUALS right=condition # ConditionStrictEqual |
-				left=condition operator=NOT_EQUALS right=condition # ConditionNotEqual; 
+				left=condition operator=NOT_EQUALS right=condition # ConditionNotEqual|
+				left=condition operator=AND right=condition # ConditionAnd |
+				left=condition operator=OR right=condition  # ConditionOr;
 
 arrowFunction: CONST ID ':' (TYPE | VOID) EQUALS OPENING_BRACKET paramSequence? CLOSING_BRACKET ARROW 
 				OPENING_CURLY_BRACKET body+ CLOSING_CURLY_BRACKET;

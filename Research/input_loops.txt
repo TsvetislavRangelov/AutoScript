@@ -1,10 +1,22 @@
 integer monday = 6; 
 boolean happy = false;
+character a = 'a';
+string p = "hii";
+
+monday = 5;
+happy = true;
+a = 'n';
+p = "bye";
+
+
+if(p == "bye"){
+    happy = false;
+};
 
 :)while(monday < 7){
 :)    monday = monday + 1;
 :)    :) if == :(
-:)    if((monday == 6) || (monday == 7)){
+:)    if(monday == 6 || monday == 7){
 :)        happy = true;
 :)    };
 :)};
@@ -18,6 +30,13 @@ boolean happy = false;
 :)};
 
 
-if(monday == 6){
-     happy = true;
-};
+:)if(monday == 6 || monday == 7 ||(7-2) >2){
+:)     happy = true;
+:)};
+
+
+:)integer tuesday = 7; 
+:)
+:)if (((monday == 6) && (tuesday != 7)) && 1<2){
+:)    happy = true;
+:)};

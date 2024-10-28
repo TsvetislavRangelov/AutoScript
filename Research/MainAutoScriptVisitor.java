@@ -37,6 +37,11 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
     }
 
     @Override
+    public String visitParentheses(AutoScriptParser.ParenthesesContext ctx) {
+        return this.visit(ctx.inner);
+    }
+
+    @Override
     public String visitConditionExpr(AutoScriptParser.ConditionExprContext ctx){
         return this.visit(ctx.singleExpression());
     }
@@ -72,6 +77,10 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
         System.out.println("Right " + ctx.right.getText() + "->"+ right);
         return String.valueOf(left.equals(right));
     }
+    @Override
+    public String visitConditionBrackets(AutoScriptParser.ConditionBracketsContext ctx){
+        return this.visit(ctx.inner);
+    }
 
     @Override
     public String visitConditionNotEqual(AutoScriptParser.ConditionNotEqualContext ctx){
@@ -101,6 +110,7 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
         return "";
     }
 
+
     @Override
     public String visitForStatement(AutoScriptParser.ForStatementContext ctx) {
         SymbolTable localScope = symbols.createScope();
@@ -118,16 +128,47 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
         String identifier = ctx.ID().getText();
         if(symbols.containsKey(identifier)){
             Symbol symbol = symbols.lookup(identifier);
-            //String parseTreeRes = this.visit(ctx.singleExpression());
-            // if(symbol.getType() == Type.BOOLEAN){
-                // if(parseTreeRes.matches("regex za boolean (true ili false)")){
-
-                // }
-                // 
-            // }
-            // TODO: Do type checking here to make sure variables can't be reassigned to different types
-            symbol.setValue(this.visit(ctx.singleExpression()));
-            symbols.update(identifier, symbol);
+            String parseTreeRes = this.visit(ctx.singleExpression());
+            if(symbol.getType() == Type.BOOLEAN){
+                if(parseTreeRes.matches("true|false")){
+                    symbol.setValue(parseTreeRes);
+                    symbols.update(identifier, symbol);
+                }
+                else {
+                    throw new ParseCancellationException("Invalid variable reassignment. Type does not match. Expected: boolean");
+                }  
+            }
+            if(symbol.getType() == Type.INTEGER){
+                if(parseTreeRes.matches("[0-9]*")){
+                    symbol.setValue(parseTreeRes);
+                    symbols.update(identifier, symbol);
+                }
+                else {
+                    throw new ParseCancellationException("Invalid variable reassignment. Type does not match. Expected: integer");
+                }
+            }
+            if(symbol.getType() == Type.CHARACTER){
+                System.out.println(parseTreeRes);
+                // TODO: this allows numbers, it should not do that
+                if(parseTreeRes.matches("'.'")){
+                    symbol.setValue(parseTreeRes);
+                    symbols.update(identifier, symbol);
+                }
+                else {
+                    throw new ParseCancellationException("Invalid variable reassignment. Type does not match. Expected: character");
+                }
+            }
+            if(symbol.getType() == Type.STRING){
+                // TODO: the identifier does not get reassigned
+                if(parseTreeRes.matches("\".*\"")){
+                    System.out.println(parseTreeRes);
+                    symbol.setValue(parseTreeRes);
+                    symbols.update(identifier, symbol);
+                }
+                else {
+                    throw new ParseCancellationException("Invalid variable reassignment. Type does not match. Expected: string");
+                }
+            }
         }
         else{
             String type = ctx.TYPE().getText();
@@ -141,17 +182,21 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
         return String.valueOf(symbols.lookup(identifier).getValue());
     }
 
+
     @Override
     public String visitLessThan(AutoScriptParser.LessThanContext ctx){
-        int left = Integer.valueOf(this.visit(ctx.left));
-        int right = Integer.valueOf(this.visit(ctx.right));
+        int left = Integer.parseInt(this.visit(ctx.left));
+        int right = Integer.parseInt(this.visit(ctx.right));
+        System.out.println("Left " +ctx.left.getText() +  "->"+ left);
+        System.out.println("Right " + ctx.right.getText() + "->"+ right);
         return String.valueOf(left<right);
     }
 
     @Override
     public String visitGreater_Than(AutoScriptParser.Greater_ThanContext ctx){
-        int left = Integer.valueOf(this.visit(ctx.left));
-        int right = Integer.valueOf(this.visit(ctx.right));
+        int left = Integer.parseInt(this.visit(ctx.left));
+        int right = Integer.parseInt(this.visit(ctx.right));
+        
         return String.valueOf(left>right);
     }
 
@@ -160,10 +205,13 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
         String result = ctx.getText();
         if(symbols.containsKey(result)){
             Symbol symbol = symbols.lookup(result);
-            if (Objects.requireNonNull(symbol.getType()) == Type.STRING) {
+            result = String.valueOf(symbol.getValue());
+            // TODO: this was also done at visitString, if its required, don't we need the same for character
+            if (Objects.requireNonNull(symbol.getType()) == Type.STRING){
                 String val = (String) symbol.getValue();
                 result = val.replace("\"", "");
-            } else {
+            } 
+            else {
                 result = String.valueOf(symbol.getValue());
             }
         }
@@ -180,7 +228,10 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
     }
     @Override
     public String visitString(AutoScriptParser.StringContext ctx){
-        return ctx.getText().replace("\"", "");
+        return ctx.getText();
+        // TODO: if this is left, its impossible to match the string in the 
+        // reassignment 
+        //return ctx.getText().replace("\"", "");
     }
 
     @Override
@@ -208,7 +259,6 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
             // for when we're dealing with strings
            return this.visit(ctx.left) + this.visit(ctx.right);
         }
-
         return String.valueOf(result);
     }
 
@@ -223,5 +273,4 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
         }
         return String.valueOf(result);
     }
-
 }
