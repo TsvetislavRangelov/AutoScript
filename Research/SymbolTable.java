@@ -25,22 +25,22 @@ public class SymbolTable {
 
     /**
      * Inserts a record within the symbol table.
+     *
      * @param identifier An identifier to identify this symbol.
-     * @param symbol Symbol information, such as type, name, value etc.
-     * @return The previous value associated with the identifier.
+     * @param symbol     Symbol information, such as type, name, value etc.
      */
-    public Symbol insert(String identifier, Symbol symbol){
-        return symbols.put(identifier, symbol);
+    public void insert(String identifier, Symbol symbol){
+        symbols.put(identifier, symbol);
     }
 
     /**
      * Updates the value associated with an entry in the symbol table.
+     *
      * @param identifier The key.
-     * @param symbol The new symbol information.
-     * @return The new value.
+     * @param symbol     The new symbol information.
      */
-    public Symbol update(String identifier, Symbol symbol){
-        return symbols.replace(identifier, symbol);
+    public void update(String identifier, Symbol symbol){
+        symbols.replace(identifier, symbol);
     }
 
     /**
