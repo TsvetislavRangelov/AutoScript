@@ -5,6 +5,16 @@ import java.util.HashMap;
  */
 public class SymbolTable {
     private final HashMap<String, Symbol> symbols;
+    // we want to be aware of which scope the symbol table is for.
+    // if we are in the global scope, then the symbol table's parent will be null.
+    // if we are in a local scope, then the symbol table will always have a parent, which
+    // will eventually reach up to the global scope.
+    //var oldSym = symbols
+    //symbols = oldSym.createScope()
+    //var returnObj = visitChildren(ctx)
+    //sym = oldSym
+    //return returnObj
+    private SymbolTable parent = null;
 
     /**
      * C`tor.
@@ -56,5 +66,19 @@ public class SymbolTable {
      */
     public void free (){
         symbols.clear();
+    }
+
+    public void setParent(SymbolTable parent){
+        this.parent = parent;
+    }
+
+    /**
+     * Creates a new scope (symbol table) by setting the current scope to the parent of the newly created scope.
+     * @return the new scope.
+     */
+    public SymbolTable createScope(){
+        SymbolTable newScope = new SymbolTable();
+        newScope.setParent(this);
+        return newScope;
     }
 }

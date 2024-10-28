@@ -17,7 +17,7 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
         }
         else{
             String type = ctx.TYPE().getText();
-            symbols.insert(identifier, new Symbol(
+            symbols.insert(identifier, new Symbol(null,
                     identifier,
                     Type.valueOf(type.toUpperCase(Locale.ROOT)),
                     this.visit(ctx.singleExpression())

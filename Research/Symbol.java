@@ -1,4 +1,5 @@
 public class Symbol {
+    private Scope scope;
     private String name;
     private Type type;
     private Object value;
@@ -9,10 +10,15 @@ public class Symbol {
      * @param type the symbol's type.
      * @param value the symbol's value.
      */
-    public Symbol(String name, Type type, Object value) {
+    public Symbol(Scope scope,String name, Type type, Object value) {
+        this.scope = scope;
         this.name = name;
         this.type = type;
         this.value = value;
+    }
+
+    public Scope getScope() {
+        return scope;
     }
 
     /**
