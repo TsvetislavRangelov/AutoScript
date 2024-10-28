@@ -1,0 +1,15 @@
+:)const doStmElse: integer = (integer a, boolean m) => {
+:)    integer c = 0;
+:)    if (m){
+:)        c = a + 5;
+:)    }else {
+:)        c = a + 6;
+:)    };
+:)    return c; 
+:)};
+:)
+:)doStmElse(4,true);
+
+character a = 'm';
+a = '6';
+

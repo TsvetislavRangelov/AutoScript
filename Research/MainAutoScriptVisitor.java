@@ -2,11 +2,12 @@ import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.Locale;
-import java.util.Objects;
 
 public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
     private final SymbolTable symbols = new SymbolTable();
 
+    // TODO: ARRAYS
+    // TODO: Functions
     @Override
     public String visitIfStatement(AutoScriptParser.IfStatementContext ctx){
         SymbolTable localScope = symbols.createScope();
@@ -73,7 +74,7 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
     public String visitConditionStrictEqual(AutoScriptParser.ConditionStrictEqualContext ctx){
         String left = String.valueOf(this.visit(ctx.left));
         String right = String.valueOf(this.visit(ctx.right));
-        System.out.println("Left " +ctx.left.getText() +  "->"+ left);
+        System.out.println("Left " + ctx.left.getText() +  "->"+ left);
         System.out.println("Right " + ctx.right.getText() + "->"+ right);
         return String.valueOf(left.equals(right));
     }
@@ -102,6 +103,7 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
     public String visitWhileStatement(AutoScriptParser.WhileStatementContext ctx){
         SymbolTable localScope = symbols.createScope();
         while(Boolean.valueOf(this.visit(ctx.condition()))){
+            System.out.println("in");
             for(int i = 0; i < ctx.body().size(); i++){
                 this.visit(ctx.body(i));
             }
@@ -129,6 +131,7 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
         if(symbols.containsKey(identifier)){
             Symbol symbol = symbols.lookup(identifier);
             String parseTreeRes = this.visit(ctx.singleExpression());
+            // Strings can not be reassigned
             if(symbol.getType() == Type.BOOLEAN){
                 if(parseTreeRes.matches("true|false")){
                     symbol.setValue(parseTreeRes);
@@ -148,25 +151,12 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
                 }
             }
             if(symbol.getType() == Type.CHARACTER){
-                System.out.println(parseTreeRes);
-                // TODO: this allows numbers, it should not do that
-                if(parseTreeRes.matches("'.'")){
+                if(parseTreeRes.matches("'[^0-9]'")){
                     symbol.setValue(parseTreeRes);
                     symbols.update(identifier, symbol);
                 }
                 else {
                     throw new ParseCancellationException("Invalid variable reassignment. Type does not match. Expected: character");
-                }
-            }
-            if(symbol.getType() == Type.STRING){
-                // TODO: the identifier does not get reassigned
-                if(parseTreeRes.matches("\".*\"")){
-                    System.out.println(parseTreeRes);
-                    symbol.setValue(parseTreeRes);
-                    symbols.update(identifier, symbol);
-                }
-                else {
-                    throw new ParseCancellationException("Invalid variable reassignment. Type does not match. Expected: string");
                 }
             }
         }
@@ -182,7 +172,6 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
         return String.valueOf(symbols.lookup(identifier).getValue());
     }
 
-
     @Override
     public String visitLessThan(AutoScriptParser.LessThanContext ctx){
         int left = Integer.parseInt(this.visit(ctx.left));
@@ -196,7 +185,8 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
     public String visitGreater_Than(AutoScriptParser.Greater_ThanContext ctx){
         int left = Integer.parseInt(this.visit(ctx.left));
         int right = Integer.parseInt(this.visit(ctx.right));
-        
+        System.out.println("Left " +ctx.left.getText() +  "->"+ left);
+        System.out.println("Right " + ctx.right.getText() + "->"+ right);
         return String.valueOf(left>right);
     }
 
@@ -206,14 +196,14 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
         if(symbols.containsKey(result)){
             Symbol symbol = symbols.lookup(result);
             result = String.valueOf(symbol.getValue());
-            // TODO: this was also done at visitString, if its required, don't we need the same for character
-            if (Objects.requireNonNull(symbol.getType()) == Type.STRING){
-                String val = (String) symbol.getValue();
-                result = val.replace("\"", "");
-            } 
-            else {
-                result = String.valueOf(symbol.getValue());
-            }
+
+            //TODO: this is also done at visitString, removing it here, does not change anything
+            // if (Objects.requireNonNull(symbol.getType()) == Type.STRING){
+                // String val = (String) symbol.getValue();
+                // result = val.replace("\"", "");
+            // } 
+            // else {
+            // }
         }
         else {
             throw new
@@ -228,10 +218,7 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
     }
     @Override
     public String visitString(AutoScriptParser.StringContext ctx){
-        return ctx.getText();
-        // TODO: if this is left, its impossible to match the string in the 
-        // reassignment 
-        //return ctx.getText().replace("\"", "");
+        return ctx.getText().replace("\"", "");
     }
 
     @Override
@@ -241,6 +228,9 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
 
     @Override
     public String visitCharacter(AutoScriptParser.CharacterContext ctx){
+        // TODO: if this is done, its impossible to match it when reassigned
+        // but it is done for the string, so it should probably be done here as well ? 
+        // return ctx.getText().replace("\'", "");
         return ctx.getText();
     }
 
@@ -272,5 +262,25 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
             result = Integer.parseInt(this.visit(ctx.left)) / (Integer.parseInt(this.visit(ctx.right)));
         }
         return String.valueOf(result);
+    }
+
+    @Override
+    public String visitFunctionCall(AutoScriptParser.FunctionCallContext ctx){
+        return "";
+    }
+
+    @Override
+    public String visitArrowFunction(AutoScriptParser.ArrowFunctionContext ctx){
+        SymbolTable localScope = symbols.createScope();
+        if(ctx.TYPE() != null && ctx.returnStatement() == null){
+            throw new ParseCancellationException("Invalid function. Must return a statement of type " + ctx.TYPE().getText());
+        }
+        if(ctx.VOID() != null && ctx.returnStatement() != null){
+            throw new ParseCancellationException("Invalid function. Function is of type void, can not use return");
+        }
+
+        localScope.free();
+
+        return "";
     }
 }

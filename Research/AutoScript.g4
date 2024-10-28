@@ -2,7 +2,7 @@ grammar AutoScript;
 
 // Parser Rules
 
-entry: ((singleExpression | assignmentExpression | collectionAssignment | ifStatement | whileStatement | forStatement | arrowFunction) + LINE_SEPARATOR)+ | EOF;
+entry: ((singleExpression | assignmentExpression | collectionAssignment | ifStatement | whileStatement | forStatement | arrowFunction | functionCall) + LINE_SEPARATOR)+ | EOF;
 
 singleExpression:   NUMBER_LITERAL # Number |
                     STRING_LITERAL # String |
@@ -35,9 +35,6 @@ whileStatement: 	WHILE OPENING_BRACKET condition CLOSING_BRACKET
 forStatement: 		FOR OPENING_BRACKET assignmentExpression COMMA condition COMMA assignmentExpression
 					CLOSING_BRACKET OPENING_CURLY_BRACKET body+ CLOSING_CURLY_BRACKET;
 
-bodyList: body+;
-body: (singleExpression | assignmentExpression | ifStatement | whileStatement | forStatement) LINE_SEPARATOR; 
-
 condition:      ID # ConditionID| 
 				singleExpression #ConditionExpr|
 				BOOLEAN_LITERAL #ConditionBoolean|
@@ -47,9 +44,19 @@ condition:      ID # ConditionID|
 				left=condition operator=AND right=condition # ConditionAnd |
 				left=condition operator=OR right=condition  # ConditionOr;
 
-arrowFunction: CONST ID ':' (TYPE | VOID) EQUALS OPENING_BRACKET paramSequence? CLOSING_BRACKET ARROW 
-				OPENING_CURLY_BRACKET body+ CLOSING_CURLY_BRACKET;
+returnStatement: (RETURN (singleExpression | NULL)) + LINE_SEPARATOR; 
 
+arrowFunction: CONST ID ':' (TYPE | VOID) EQUALS OPENING_BRACKET paramSequence? CLOSING_BRACKET ARROW 
+				OPENING_CURLY_BRACKET bodyList* returnStatement? CLOSING_CURLY_BRACKET;
+
+functionCall: ID OPENING_BRACKET functionInputSequence? CLOSING_BRACKET;
+
+functionInputSequence: functionInput (COMMA functionInput)*;
+
+functionInput: (BOOLEAN_LITERAL | CHARACTER_LITERAL | STRING_LITERAL | NUMBER_LITERAL | 
+				ID | singleExpression); 
+bodyList: body+;
+body: (singleExpression | assignmentExpression | ifStatement | whileStatement | forStatement) LINE_SEPARATOR; 
 
 paramSequence: param (COMMA param)*;
 
