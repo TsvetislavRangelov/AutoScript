@@ -28,22 +28,23 @@ ifStatement: 		IF OPENING_BRACKET condition CLOSING_BRACKET
 						OPENING_CURLY_BRACKET body+ CLOSING_CURLY_BRACKET)*
 					(ELSE OPENING_CURLY_BRACKET body+ CLOSING_CURLY_BRACKET)?;
 
+
 whileStatement: 	WHILE OPENING_BRACKET condition CLOSING_BRACKET 
 					OPENING_CURLY_BRACKET body+ CLOSING_CURLY_BRACKET;	
 
 forStatement: 		FOR OPENING_BRACKET assignmentExpression COMMA condition COMMA (singleExpression| assignmentExpression)
 					CLOSING_BRACKET OPENING_CURLY_BRACKET body+ CLOSING_CURLY_BRACKET;
 
-body: (singleExpression | assignmentExpression | ifStatement | whileStatement | forStatement) + LINE_SEPARATOR; 
+body: (singleExpression | assignmentExpression | ifStatement | whileStatement | forStatement) LINE_SEPARATOR; 
 
 condition:      ID # ConditionID| 
 				singleExpression #ConditionExpr|
 				BOOLEAN_LITERAL #ConditionBoolean|
 				OPENING_BRACKET inner=condition CLOSING_BRACKET #ConditionBrackets|
-				left=condition operator=AND right=condition # And |
-				left=condition operator=OR right=condition  # Or |
-				left=condition operator=STRICT_EQUALS right=condition # StringEqual |
-				left=condition operator=NOT_EQUALS right=condition # NotEqual; 
+				left=condition operator=AND right=condition # ConditionAnd |
+				left=condition operator=OR right=condition  # ConditionOr |
+				left=condition operator=STRICT_EQUALS right=condition # ConditionStrictEqual |
+				left=condition operator=NOT_EQUALS right=condition # ConditionNotEqual; 
 
 arrowFunction: CONST ID ':' (TYPE | VOID) EQUALS OPENING_BRACKET paramSequence? CLOSING_BRACKET ARROW 
 				OPENING_CURLY_BRACKET body+ CLOSING_CURLY_BRACKET;

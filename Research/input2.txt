@@ -1,7 +1,11 @@
 integer a = 5 + 5;
 integer b = 2;
-
 string c = "abc" + "de";
 
 integer ab = b;
 a = 12;
+boolean poo = true; 
+if(poo){
+    a = 7;
+    b = 3;
+};

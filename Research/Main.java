@@ -19,5 +19,3 @@ public class Main
         visitor.visit(start);
     }
 }
-
-
