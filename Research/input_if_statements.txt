@@ -1,0 +1,51 @@
+integer a = 5 + 5;
+integer b = 2;
+string c = "abc" + "de";
+
+integer ab = b;
+a = 12;
+boolean poo = true; 
+if(poo){
+    a = 7;
+    b = 3;
+};
+
+if(poo == false){
+    string monkey = "banana";
+}else if (poo == true){
+    string sun = "sky";
+};
+
+boolean isMonday = false; 
+if (poo && isMonday){
+    integer num = 1;
+};
+
+if(poo || isMonday){
+    integer num = 2;
+};
+
+if(b == 3){
+    integer num = 3; 
+};
+
+if(b != 3){
+    integer num = 7;
+};
+
+if(isMonday != true){
+    integer num = 2;
+}
+
+if(poo == true){
+    integer num = 3;
+}
+
+boolean one = true;
+integer two = 2; 
+integer three = 3; 
+
+:) WIP - works individually but not together
+:)if(poo && (two < three) && (5+2 == 7)){
+:)    integer num = 4;
+:)};

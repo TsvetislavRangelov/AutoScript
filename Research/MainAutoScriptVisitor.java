@@ -1,4 +1,3 @@
-import org.antlr.v4.parse.ANTLRParser.blockEntry_return;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
@@ -13,10 +12,12 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
         SymbolTable localScope = symbols.createScope();
         for (int i=0; i < ctx.condition().size(); i++){
             boolean condition = Boolean.valueOf(this.visit(ctx.condition(i)));
+            System.out.println("Condition " +String.valueOf(ctx.condition(i).getText()) + "->" +  condition);
             if (condition){
-                System.out.println(condition);
-                String res = this.visit(ctx.body(i));
-                System.out.println(res);
+                for (int m=0; m < ctx.bodyList(i).body().size(); m++){
+                    String res = this.visit(ctx.bodyList(i).body(m));
+                    System.out.println(res);
+                }
                 break;
             }
         }
@@ -30,12 +31,7 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
         String identifier = ctx.ID().getText();
         if(symbols.containsKey(identifier)){
             Symbol symbol = symbols.lookup(identifier);
-            if(symbol.getType() == Type.BOOLEAN){
-                result = (String) symbol.getValue();
-            }
-            else{
-                throw new ParseCancellationException("Identifier does not resolve to a boolean type" + identifier);                
-            }
+            result = (String) symbol.getValue();           
         }
         return result;
     }
@@ -54,6 +50,8 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
     public String visitConditionAnd(AutoScriptParser.ConditionAndContext ctx){
         boolean left = Boolean.valueOf(this.visit(ctx.left));
         boolean right = Boolean.valueOf(this.visit(ctx.right));
+         System.out.println("Left " +ctx.left.getText() +  "->"+ left);
+         System.out.println("Right " + ctx.right.getText() + "->"+ right);
         return String.valueOf(left && right);
     }
 
@@ -61,26 +59,31 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
     public String visitConditionOr(AutoScriptParser.ConditionOrContext ctx){
         boolean left = Boolean.valueOf(this.visit(ctx.left));
         boolean right = Boolean.valueOf(this.visit(ctx.right));
+         System.out.println("Left " +ctx.left.getText() +  "->"+ left);
+         System.out.println("Right " + ctx.right.getText() + "->"+ right);
         return String.valueOf(left || right);
     }
 
     @Override
     public String visitConditionStrictEqual(AutoScriptParser.ConditionStrictEqualContext ctx){
-        boolean left = Boolean.valueOf(this.visit(ctx.left));
-        boolean right = Boolean.valueOf(this.visit(ctx.right));
-        return String.valueOf(left == right);
+        String left = String.valueOf(this.visit(ctx.left));
+        String right = String.valueOf(this.visit(ctx.right));
+        System.out.println("Left " +ctx.left.getText() +  "->"+ left);
+        System.out.println("Right " + ctx.right.getText() + "->"+ right);
+        return String.valueOf(left.equals(right));
     }
 
     @Override
     public String visitConditionNotEqual(AutoScriptParser.ConditionNotEqualContext ctx){
-        boolean left = Boolean.valueOf(this.visit(ctx.left));
-        boolean right = Boolean.valueOf(this.visit(ctx.right));
-        return String.valueOf(left != right);
+        String left = String.valueOf(this.visit(ctx.left));
+        String right = String.valueOf(this.visit(ctx.right));
+         System.out.println("Left " +ctx.left.getText() +  "->"+ left);
+         System.out.println("Right " + ctx.right.getText() + "->"+ right);
+        return String.valueOf(!left.equals(right));
     }
 
     @Override
     public String visitTerminal(TerminalNode node) {
-       // we use the vocab here to get the symbolic name for the rule number
        int lineNumber = node.getSymbol().getLine();
         System.out.println("Line: " + lineNumber);
         return "";
@@ -112,8 +115,22 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
                     this.visit(ctx.singleExpression())
             ));
         }
-        System.out.println("Ass:" +String.valueOf(symbols.lookup(identifier).getValue()));
+        System.out.println("Assignment:" + identifier + "->" + String.valueOf(symbols.lookup(identifier).getValue()));
         return String.valueOf(symbols.lookup(identifier).getValue());
+    }
+
+    @Override
+    public String visitLessThan(AutoScriptParser.LessThanContext ctx){
+        int left = Integer.valueOf(this.visit(ctx.left));
+        int right = Integer.valueOf(this.visit(ctx.right));
+        return String.valueOf(left<right);
+    }
+
+    @Override
+    public String visitGreater_Than(AutoScriptParser.Greater_ThanContext ctx){
+        int left = Integer.valueOf(this.visit(ctx.left));
+        int right = Integer.valueOf(this.visit(ctx.right));
+        return String.valueOf(left>right);
     }
 
     @Override

@@ -23,10 +23,10 @@ collectionAssignment: TYPE '[]' ID EQUALS ('[' (NUMBER_LITERAL (COMMA NUMBER_LIT
 
 
 ifStatement: 		IF OPENING_BRACKET condition CLOSING_BRACKET 
-						OPENING_CURLY_BRACKET body+ CLOSING_CURLY_BRACKET
+						OPENING_CURLY_BRACKET bodyList CLOSING_CURLY_BRACKET
 					(ELSE IF OPENING_BRACKET condition CLOSING_BRACKET
-						OPENING_CURLY_BRACKET body+ CLOSING_CURLY_BRACKET)*
-					(ELSE OPENING_CURLY_BRACKET body+ CLOSING_CURLY_BRACKET)?;
+						OPENING_CURLY_BRACKET bodyList CLOSING_CURLY_BRACKET)*
+					(ELSE OPENING_CURLY_BRACKET bodyList CLOSING_CURLY_BRACKET)?;
 
 
 whileStatement: 	WHILE OPENING_BRACKET condition CLOSING_BRACKET 
@@ -35,6 +35,7 @@ whileStatement: 	WHILE OPENING_BRACKET condition CLOSING_BRACKET
 forStatement: 		FOR OPENING_BRACKET assignmentExpression COMMA condition COMMA (singleExpression| assignmentExpression)
 					CLOSING_BRACKET OPENING_CURLY_BRACKET body+ CLOSING_CURLY_BRACKET;
 
+bodyList: body+;
 body: (singleExpression | assignmentExpression | ifStatement | whileStatement | forStatement) LINE_SEPARATOR; 
 
 condition:      ID # ConditionID| 
