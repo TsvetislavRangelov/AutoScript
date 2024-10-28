@@ -89,7 +89,29 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
         return "";
     }
 
+    @Override
+    public String visitWhileStatement(AutoScriptParser.WhileStatementContext ctx){
+        SymbolTable localScope = symbols.createScope();
+        while(Boolean.valueOf(this.visit(ctx.condition()))){
+            for(int i = 0; i < ctx.body().size(); i++){
+                this.visit(ctx.body(i));
+            }
+        }
+        localScope.free();
+        return "";
+    }
 
+    @Override
+    public String visitForStatement(AutoScriptParser.ForStatementContext ctx) {
+        SymbolTable localScope = symbols.createScope();
+        for(this.visit(ctx.assignmentExpression(0)); Boolean.valueOf(this.visit(ctx.condition())); this.visit(ctx.assignmentExpression(1))){
+            for(int i = 0; i < ctx.body().size(); i++){
+                this.visit(ctx.body(i));
+            }
+        } 
+        localScope.free();
+        return "";
+    }
 
     @Override
     public String visitAssignmentExpression(AutoScriptParser.AssignmentExpressionContext ctx){

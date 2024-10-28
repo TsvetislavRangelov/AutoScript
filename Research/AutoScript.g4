@@ -32,7 +32,7 @@ ifStatement: 		IF OPENING_BRACKET condition CLOSING_BRACKET
 whileStatement: 	WHILE OPENING_BRACKET condition CLOSING_BRACKET 
 					OPENING_CURLY_BRACKET body+ CLOSING_CURLY_BRACKET;	
 
-forStatement: 		FOR OPENING_BRACKET assignmentExpression COMMA condition COMMA (singleExpression| assignmentExpression)
+forStatement: 		FOR OPENING_BRACKET assignmentExpression COMMA condition COMMA assignmentExpression
 					CLOSING_BRACKET OPENING_CURLY_BRACKET body+ CLOSING_CURLY_BRACKET;
 
 bodyList: body+;

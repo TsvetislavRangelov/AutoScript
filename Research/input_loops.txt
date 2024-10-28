@@ -1,0 +1,23 @@
+integer monday = 6; 
+boolean happy = false;
+
+:)while(monday < 7){
+:)    monday = monday + 1;
+:)    :) if == :(
+:)    if((monday == 6) || (monday == 7)){
+:)        happy = true;
+:)    };
+:)};
+
+:)integer num = 0; 
+:)for (integer i = 0, i <7, i = i+1){
+:)    num = i;
+:)    if(num == 6){
+:)        boolean end = true;
+:)    };
+:)};
+
+
+if(monday == 6){
+     happy = true;
+};
