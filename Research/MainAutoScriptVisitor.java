@@ -151,7 +151,8 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
                 }
             }
             if(symbol.getType() == Type.CHARACTER){
-                if(parseTreeRes.matches("'[^0-9]'")){
+                String formatted = "'"+ parseTreeRes + "'";
+                if(formatted.matches("'[^0-9]'")){
                     symbol.setValue(parseTreeRes);
                     symbols.update(identifier, symbol);
                 }
@@ -228,10 +229,7 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
 
     @Override
     public String visitCharacter(AutoScriptParser.CharacterContext ctx){
-        // TODO: if this is done, its impossible to match it when reassigned
-        // but it is done for the string, so it should probably be done here as well ? 
-        // return ctx.getText().replace("\'", "");
-        return ctx.getText();
+        return ctx.getText().replace("\'", "");
     }
 
     @Override
