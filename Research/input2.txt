@@ -5,4 +5,3 @@ string c = "abc" + "de";
 
 integer ab = b;
 a = 12;
-n = "da";
