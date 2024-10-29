@@ -282,6 +282,6 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
         if(ctx1 != null){
             return Integer.parseInt(this.visit(ctx1.left)) > Integer.parseInt(this.visit(ctx1.right));
         }
-        return Integer.parseInt(this.visit(ctx2.left)) > Integer.parseInt(this.visit(ctx2.right));
+        return Integer.parseInt(this.visit(ctx2.left)) < Integer.parseInt(this.visit(ctx2.right));
     }
 }
