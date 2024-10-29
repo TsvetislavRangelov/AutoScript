@@ -72,6 +72,10 @@ public class SymbolTable {
         this.parent = parent;
     }
 
+    public boolean hasParent(){
+        return this.parent != null;
+    }
+
     /**
      * Creates a new scope (symbol table) by setting the current scope to the parent of the newly created scope.
      * @return the new scope.

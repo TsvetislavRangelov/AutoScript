@@ -7,13 +7,22 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
     private final SymbolTable symbols = new SymbolTable();
 
     // TODO: ARRAYS
+//    @Override
+//    public String visitCollectionAssignment(AutoScriptParser.CollectionAssignmentContext ctx) {
+//        String identifier = ctx.ID().getText();
+//        if(symbols.containsKey(identifier)) {
+//            Symbol prevValue = symbols.lookup(identifier);
+//
+//        }
+//
+//    }
     // TODO: Functions
     @Override
     public String visitIfStatement(AutoScriptParser.IfStatementContext ctx){
         SymbolTable localScope = symbols.createScope();
         for (int i=0; i < ctx.condition().size(); i++){
-            boolean condition = Boolean.valueOf(this.visit(ctx.condition(i)));
-            System.out.println("Condition " +String.valueOf(ctx.condition(i).getText()) + "->" +  condition);
+            boolean condition = Boolean.parseBoolean(this.visit(ctx.condition(i)));
+            System.out.println("Condition " + ctx.condition(i).getText() + "->" +  condition);
             if (condition){
                 for (int m=0; m < ctx.bodyList(i).body().size(); m++){
                     String res = this.visit(ctx.bodyList(i).body(m));
@@ -54,8 +63,8 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
 
     @Override
     public String visitConditionAnd(AutoScriptParser.ConditionAndContext ctx){
-        boolean left = Boolean.valueOf(this.visit(ctx.left));
-        boolean right = Boolean.valueOf(this.visit(ctx.right));
+        boolean left = Boolean.parseBoolean(this.visit(ctx.left));
+        boolean right = Boolean.parseBoolean(this.visit(ctx.right));
          System.out.println("Left " +ctx.left.getText() +  "->"+ left);
          System.out.println("Right " + ctx.right.getText() + "->"+ right);
         return String.valueOf(left && right);
@@ -63,8 +72,8 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
 
     @Override
     public String visitConditionOr(AutoScriptParser.ConditionOrContext ctx){
-        boolean left = Boolean.valueOf(this.visit(ctx.left));
-        boolean right = Boolean.valueOf(this.visit(ctx.right));
+        boolean left = Boolean.parseBoolean(this.visit(ctx.left));
+        boolean right = Boolean.parseBoolean(this.visit(ctx.right));
          System.out.println("Left " +ctx.left.getText() +  "->"+ left);
          System.out.println("Right " + ctx.right.getText() + "->"+ right);
         return String.valueOf(left || right);
@@ -102,7 +111,7 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
     @Override
     public String visitWhileStatement(AutoScriptParser.WhileStatementContext ctx){
         SymbolTable localScope = symbols.createScope();
-        while(Boolean.valueOf(this.visit(ctx.condition()))){
+        while(Boolean.parseBoolean(this.visit(ctx.condition()))){
             System.out.println("in");
             for(int i = 0; i < ctx.body().size(); i++){
                 this.visit(ctx.body(i));
@@ -116,7 +125,7 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
     @Override
     public String visitForStatement(AutoScriptParser.ForStatementContext ctx) {
         SymbolTable localScope = symbols.createScope();
-        for(this.visit(ctx.assignmentExpression(0)); Boolean.valueOf(this.visit(ctx.condition())); this.visit(ctx.assignmentExpression(1))){
+        for(this.visit(ctx.assignmentExpression(0)); Boolean.parseBoolean(this.visit(ctx.condition())); this.visit(ctx.assignmentExpression(1))){
             for(int i = 0; i < ctx.body().size(); i++){
                 this.visit(ctx.body(i));
             }
@@ -127,68 +136,17 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
 
     @Override
     public String visitAssignmentExpression(AutoScriptParser.AssignmentExpressionContext ctx){
-        String identifier = ctx.ID().getText();
-        if(symbols.containsKey(identifier)){
-            Symbol symbol = symbols.lookup(identifier);
-            String parseTreeRes = this.visit(ctx.singleExpression());
-            // Strings can not be reassigned
-            if(symbol.getType() == Type.BOOLEAN){
-                if(parseTreeRes.matches("true|false")){
-                    symbol.setValue(parseTreeRes);
-                    symbols.update(identifier, symbol);
-                }
-                else {
-                    throw new ParseCancellationException("Invalid variable reassignment. Type does not match. Expected: boolean");
-                }  
-            }
-            if(symbol.getType() == Type.INTEGER){
-                if(parseTreeRes.matches("[0-9]*")){
-                    symbol.setValue(parseTreeRes);
-                    symbols.update(identifier, symbol);
-                }
-                else {
-                    throw new ParseCancellationException("Invalid variable reassignment. Type does not match. Expected: integer");
-                }
-            }
-            if(symbol.getType() == Type.CHARACTER){
-                String formatted = "'"+ parseTreeRes + "'";
-                if(formatted.matches("'[^0-9]'")){
-                    symbol.setValue(parseTreeRes);
-                    symbols.update(identifier, symbol);
-                }
-                else {
-                    throw new ParseCancellationException("Invalid variable reassignment. Type does not match. Expected: character");
-                }
-            }
-        }
-        else{
-            String type = ctx.TYPE().getText();
-            symbols.insert(identifier, new Symbol(null,
-                    identifier,
-                    Type.valueOf(type.toUpperCase(Locale.ROOT)),
-                    this.visit(ctx.singleExpression())
-            ));
-        }
-        System.out.println("Assignment:" + identifier + "->" + String.valueOf(symbols.lookup(identifier).getValue()));
-        return String.valueOf(symbols.lookup(identifier).getValue());
+        return assignVariableToExpression(ctx.ID().getText(), ctx);
     }
 
     @Override
     public String visitLessThan(AutoScriptParser.LessThanContext ctx){
-        int left = Integer.parseInt(this.visit(ctx.left));
-        int right = Integer.parseInt(this.visit(ctx.right));
-        System.out.println("Left " +ctx.left.getText() +  "->"+ left);
-        System.out.println("Right " + ctx.right.getText() + "->"+ right);
-        return String.valueOf(left<right);
+        return String.valueOf(evalGreaterOrLessThan(null, ctx));
     }
 
     @Override
     public String visitGreater_Than(AutoScriptParser.Greater_ThanContext ctx){
-        int left = Integer.parseInt(this.visit(ctx.left));
-        int right = Integer.parseInt(this.visit(ctx.right));
-        System.out.println("Left " +ctx.left.getText() +  "->"+ left);
-        System.out.println("Right " + ctx.right.getText() + "->"+ right);
-        return String.valueOf(left>right);
+        return String.valueOf(evalGreaterOrLessThan(ctx, null));
     }
 
     @Override
@@ -229,12 +187,12 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
 
     @Override
     public String visitCharacter(AutoScriptParser.CharacterContext ctx){
-        return ctx.getText().replace("\'", "");
+        return ctx.getText().replace("'", "");
     }
 
     @Override
     public String visitAdditionSubtraction(AutoScriptParser.AdditionSubtractionContext ctx){
-        int result = 0;
+        int result;
         try{
             if(ctx.operator.getText().equals("+")){
                 result = Integer.parseInt(this.visit(ctx.left)) + Integer.parseInt(this.visit(ctx.right));
@@ -252,7 +210,7 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
 
     @Override
     public String visitMultiplicationDivision(AutoScriptParser.MultiplicationDivisionContext ctx){
-        int result = 0;
+        int result;
         if(ctx.operator.getText().equals("*")){
             result = Integer.parseInt(this.visit(ctx.left)) * Integer.parseInt(this.visit(ctx.right));
         }
@@ -280,5 +238,50 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
         localScope.free();
 
         return "";
+    }
+
+    private String assignVariableToExpression(String varName, AutoScriptParser.AssignmentExpressionContext ctx){
+        if(symbols.containsKey(varName)) {
+            Symbol symbol = symbols.lookup(varName);
+            String parseTreeRes = this.visit(ctx.singleExpression());
+            Type varType = symbol.getType();
+            // Strings can not be reassigned
+            if (varType == Type.BOOLEAN && !parseTreeRes.matches("true|false")) {
+                throw new ParseCancellationException("Invalid variable reassignment. Type does not match. Expected: " +
+                        String.valueOf(symbol.getType()).toLowerCase(Locale.ROOT));
+            }
+            else if (varType == Type.INTEGER && !parseTreeRes.matches("[0-9]*")) {
+                throw new ParseCancellationException("Invalid variable reassignment. Type does not match. Expected: " +
+                        String.valueOf(symbol.getType()).toLowerCase(Locale.ROOT));
+            }
+            else if (varType == Type.CHARACTER) {
+                String formatted = "'" + parseTreeRes + "'";
+                if(!formatted.matches("[0-9]*")){
+                    throw new ParseCancellationException("Invalid variable reassignment. Type does not match. Expected: " +
+                            String.valueOf(symbol.getType()).toLowerCase(Locale.ROOT));
+                }
+            }
+            symbol.setValue(parseTreeRes);
+            symbols.update(varName, symbol);
+        }
+        else{
+            String type = ctx.TYPE().getText();
+            symbols.insert(varName, new Symbol(
+                    symbols.hasParent() ? Scope.LOCAL : Scope.GLOBAL,
+                    varName,
+                    Type.valueOf(type.toUpperCase(Locale.ROOT)),
+                    this.visit(ctx.singleExpression())
+            ));
+        }
+        System.out.println("Assignment:" + varName + "->" + symbols.lookup(varName).getValue());
+        return String.valueOf(symbols.lookup(varName).getValue());
+    }
+
+    private boolean evalGreaterOrLessThan(AutoScriptParser.Greater_ThanContext ctx1,
+                                          AutoScriptParser.LessThanContext ctx2){
+        if(ctx1 != null){
+            return Integer.parseInt(this.visit(ctx1.left)) > Integer.parseInt(this.visit(ctx1.right));
+        }
+        return Integer.parseInt(this.visit(ctx2.left)) > Integer.parseInt(this.visit(ctx2.right));
     }
 }
