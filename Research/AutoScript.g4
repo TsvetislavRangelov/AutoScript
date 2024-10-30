@@ -18,12 +18,11 @@ singleExpression:   NUMBER_LITERAL # Number |
 		            left=singleExpression operator=(TIMES | SLASH) right=singleExpression # MultiplicationDivision |
 		            left=singleExpression operator=(MINUS | PLUS) right=singleExpression # AdditionSubtraction ; 	  // this rule is left recursive
 
-assignmentExpression: 	TYPE? ID EQUALS (singleExpression | functionCall);
+assignmentExpression: 	TYPE? ID EQUALS (singleExpression | functionCall | collectionIndex);
 
-
-
-collectionIndexAssignment: collectionIndex EQUALS singleExpression;
 collectionIndex: ID '[' singleExpression ']';
+
+collectionIndexAssignment: collectionIndex EQUALS (singleExpression | collectionIndex);
 collectionAssignment: TYPE '[]' ID EQUALS '[' singleExpression ']';
 
 ifStatement: 		IF OPENING_BRACKET condition CLOSING_BRACKET 
@@ -68,7 +67,7 @@ functionInputSequence: functionInput (COMMA functionInput)*;
 functionInput: (BOOLEAN_LITERAL | CHARACTER_LITERAL | STRING_LITERAL | NUMBER_LITERAL | 
 				ID | singleExpression); 
 bodyList: body+;
-body: (singleExpression | assignmentExpression | ifStatement | whileStatement | forStatement | collectionIndexAssignment | collectionIndex | print) LINE_SEPARATOR;
+body: (singleExpression | assignmentExpression | ifStatement | whileStatement | forStatement | collectionIndexAssignment | collectionIndex) LINE_SEPARATOR;
 
 paramSequence: param (COMMA param)*;
 

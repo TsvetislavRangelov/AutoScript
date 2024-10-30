@@ -1,0 +1,16 @@
+integer length = 10;
+integer[] array = [length];
+
+:) Allocating memory for the array.
+for(integer i = 0, i < length, i = i + 1) {
+    array[i] = i;
+}
+
+for(integer k = 0, k < (length / 2), k = k + 1) {
+   integer temp = array[k];
+   array[k] = array[length - 1 - k];
+   array[length - 1 - k] = temp;
+};
+
+
+

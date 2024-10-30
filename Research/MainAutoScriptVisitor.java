@@ -24,29 +24,60 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
 
     @Override
     public String visitCollectionIndexAssignment(AutoScriptParser.CollectionIndexAssignmentContext ctx) {
-        String identifier = ctx.collectionIndex().ID().getText();
-        int index = Integer.parseInt(this.visit(ctx.collectionIndex().singleExpression()));
-        if(symbols.containsKey(identifier)) {
-            Symbol arrayData = symbols.lookup(identifier);
-            if(arrayData.getType().equals(Type.INTEGER_ARRAY)){
-                int val = Integer.parseInt(this.visit(ctx.singleExpression()));
-                int[] intArray = (int[]) arrayData.getValue();
-                intArray[index] = val;
+        if(ctx.collectionIndex().size() > 1){
+            int indexLeft = Integer.parseInt(this.visit(ctx.collectionIndex(0).singleExpression()));
+            String identifierLeft = ctx.collectionIndex(0).ID().getText();
+            String identifierRight = ctx.collectionIndex(1).ID().getText();
+            if(symbols.containsKey(identifierLeft) && symbols.containsKey(identifierRight)){
+                Symbol leftArr = symbols.lookup(identifierLeft);
+                Symbol rightArr = symbols.lookup(identifierRight);
+                if(leftArr.getType().equals(Type.INTEGER_ARRAY) && rightArr.getType().equals(Type.INTEGER_ARRAY)){
+                    int val = Integer.parseInt(this.visit(ctx.collectionIndex(1).singleExpression()));
+                    int[] intArray = (int[]) leftArr.getValue();
+                    intArray[indexLeft] = val;
+                }
+                else if(leftArr.getType().equals(Type.STRING_ARRAY) && rightArr.getType().equals(Type.STRING_ARRAY)){
+                    String val = String.valueOf(this.visit(ctx.collectionIndex(1).singleExpression()));
+                    String[] stringArray = (String[]) leftArr.getValue();
+                    stringArray[indexLeft] = val;
+                }
+                else if(leftArr.getType().equals(Type.CHARACTER_ARRAY) && rightArr.getType().equals(Type.CHARACTER_ARRAY)){
+                    char val = ctx.collectionIndex(1).singleExpression().getText().charAt(0);
+                    char[] charArray = (char[]) leftArr.getValue();
+                    charArray[indexLeft] = val;
+                }
+                else if(leftArr.getType().equals(Type.BOOLEAN_ARRAY) && rightArr.getType().equals(Type.BOOLEAN_ARRAY)){
+                    boolean val = Boolean.parseBoolean(this.visit(ctx.collectionIndex(1).singleExpression()));
+                    boolean[] intArray = (boolean[]) leftArr.getValue();
+                    intArray[indexLeft] = val;
+                }
             }
-            else if(arrayData.getType().equals(Type.STRING_ARRAY)){
-                String val = this.visit(ctx.collectionIndex().singleExpression());
-                String[] strArray = (String[]) arrayData.getValue();
-                strArray[index] = val;
-            }
-            else if(arrayData.getType().equals(Type.BOOLEAN_ARRAY)){
-                boolean val = Boolean.parseBoolean(this.visit(ctx.collectionIndex().singleExpression()));
-                boolean[] strArray = (boolean[]) arrayData.getValue();
-                strArray[index] = val;
-            }
-            else if(arrayData.getType().equals(Type.CHARACTER_ARRAY)){
-                char val = ctx.singleExpression().getText().charAt(0);
-                char[] strArray = (char[]) arrayData.getValue();
-                strArray[index] = val;
+        }
+        else{
+            String identifier = ctx.collectionIndex(0).ID().getText();
+            int index = Integer.parseInt(this.visit(ctx.collectionIndex(0).singleExpression()));
+            if(symbols.containsKey(identifier)) {
+                Symbol arrayData = symbols.lookup(identifier);
+                if(arrayData.getType().equals(Type.INTEGER_ARRAY)){
+                    int val = Integer.parseInt(this.visit(ctx.singleExpression()));
+                    int[] intArray = (int[]) arrayData.getValue();
+                    intArray[index] = val;
+                }
+                else if(arrayData.getType().equals(Type.STRING_ARRAY)){
+                    String val = this.visit(ctx.singleExpression());
+                    String[] strArray = (String[]) arrayData.getValue();
+                    strArray[index] = val;
+                }
+                else if(arrayData.getType().equals(Type.BOOLEAN_ARRAY)){
+                    boolean val = Boolean.parseBoolean(this.visit(ctx.singleExpression()));
+                    boolean[] strArray = (boolean[]) arrayData.getValue();
+                    strArray[index] = val;
+                }
+                else if(arrayData.getType().equals(Type.CHARACTER_ARRAY)){
+                    char val = ctx.singleExpression().getText().charAt(0);
+                    char[] strArray = (char[]) arrayData.getValue();
+                    strArray[index] = val;
+                }
             }
         }
         return "";
@@ -377,8 +408,11 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
             String parseTreeRes;
             if(ctx.singleExpression() != null){
                 parseTreeRes = this.visit(ctx.singleExpression());
-            }else{
+            }else if (ctx.functionCall() != null){
                 parseTreeRes = this.visit(ctx.functionCall());
+            }
+            else{
+                parseTreeRes = this.visit(ctx.collectionIndex());
             }
             Type varType = symbol.getType();
             // Strings can not be reassigned
@@ -409,7 +443,8 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
                     symbols.hasParent() ? Scope.LOCAL : Scope.GLOBAL,
                     varName,
                     Type.valueOf(type.toUpperCase(Locale.ROOT)),
-                    this.visit(ctx.singleExpression()!= null? ctx.singleExpression() : ctx.functionCall())
+                    this.visit(ctx.singleExpression()!= null ? ctx.singleExpression() :
+                            ctx.functionCall() != null ? ctx.functionCall() : ctx.collectionIndex())
             ));
         }
         // System.out.println("Assignment:" + varName + "->" + symbols.lookup(varName).getValue());
