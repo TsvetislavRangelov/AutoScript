@@ -67,7 +67,7 @@ functionInputSequence: functionInput (COMMA functionInput)*;
 functionInput: (BOOLEAN_LITERAL | CHARACTER_LITERAL | STRING_LITERAL | NUMBER_LITERAL | 
 				ID | singleExpression); 
 bodyList: body+;
-body: (singleExpression | assignmentExpression | ifStatement | whileStatement | forStatement | collectionIndexAssignment | collectionIndex) LINE_SEPARATOR;
+body: (singleExpression | assignmentExpression | ifStatement | whileStatement | forStatement | collectionIndexAssignment | collectionIndex | print) LINE_SEPARATOR;
 
 paramSequence: param (COMMA param)*;
 
