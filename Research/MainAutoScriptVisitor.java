@@ -60,22 +60,22 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
             Symbol arrayData = symbols.lookup(identifier);
             if(arrayData.getType().equals(Type.INTEGER_ARRAY)){
                 int[] intArray = (int[])arrayData.getValue();
-                System.out.println("Array element at index " + index + " is " + intArray[index]);
+                // System.out.println("Array element at index " + index + " is " + intArray[index]);
                 return String.valueOf(intArray[index]);
             }
             if(arrayData.getType().equals(Type.CHARACTER_ARRAY)){
                 char[] charArray = (char[])arrayData.getValue();
-                System.out.println("Array element at index " + index + " is " + charArray[index]);
+                // System.out.println("Array element at index " + index + " is " + charArray[index]);
                 return String.valueOf(charArray[index]);
             }
             if(arrayData.getType().equals(Type.BOOLEAN_ARRAY)){
                 boolean[] booleanArray = (boolean[])arrayData.getValue();
-                System.out.println("Array element at index " + index + " is " + booleanArray[index]);
+                // System.out.println("Array element at index " + index + " is " + booleanArray[index]);
                 return String.valueOf(booleanArray[index]);
             }
             if(arrayData.getType().equals(Type.STRING_ARRAY)){
                 String[] stringArray = (String[])arrayData.getValue();
-                System.out.println("Array element at index " + index + " is " + stringArray[index]);
+                // System.out.println("Array element at index " + index + " is " + stringArray[index]);
                 return String.valueOf(stringArray[index]);
             }
         }
@@ -87,11 +87,10 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
         symbols.createScope();
         for (int i=0; i < ctx.condition().size(); i++){
             boolean condition = Boolean.parseBoolean(this.visit(ctx.condition(i)));
-            System.out.println("Condition " + ctx.condition(i).getText() + "->" +  condition);
+            // System.out.println("Condition " + ctx.condition(i).getText() + "->" +  condition);
             if (condition){
                 for (int m=0; m < ctx.bodyList(i).body().size(); m++){
                     String res = this.visit(ctx.bodyList(i).body(m));
-                    System.out.println(res);
                 }
                 break;
             }
@@ -130,8 +129,8 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
     public String visitConditionAnd(AutoScriptParser.ConditionAndContext ctx){
         boolean left = Boolean.parseBoolean(this.visit(ctx.left));
         boolean right = Boolean.parseBoolean(this.visit(ctx.right));
-         System.out.println("Left " +ctx.left.getText() +  "->"+ left);
-         System.out.println("Right " + ctx.right.getText() + "->"+ right);
+        //  System.out.println("Left " +ctx.left.getText() +  "->"+ left);
+        //  System.out.println("Right " + ctx.right.getText() + "->"+ right);
         return String.valueOf(left && right);
     }
 
@@ -139,8 +138,8 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
     public String visitConditionOr(AutoScriptParser.ConditionOrContext ctx){
         boolean left = Boolean.parseBoolean(this.visit(ctx.left));
         boolean right = Boolean.parseBoolean(this.visit(ctx.right));
-         System.out.println("Left " +ctx.left.getText() +  "->"+ left);
-         System.out.println("Right " + ctx.right.getText() + "->"+ right);
+        //  System.out.println("Left " +ctx.left.getText() +  "->"+ left);
+        //  System.out.println("Right " + ctx.right.getText() + "->"+ right);
         return String.valueOf(left || right);
     }
 
@@ -148,8 +147,8 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
     public String visitConditionStrictEqual(AutoScriptParser.ConditionStrictEqualContext ctx){
         String left = String.valueOf(this.visit(ctx.left));
         String right = String.valueOf(this.visit(ctx.right));
-        System.out.println("Left " + ctx.left.getText() +  "->"+ left);
-        System.out.println("Right " + ctx.right.getText() + "->"+ right);
+        // System.out.println("Left " + ctx.left.getText() +  "->"+ left);
+        // System.out.println("Right " + ctx.right.getText() + "->"+ right);
         return String.valueOf(left.equals(right));
     }
     @Override
@@ -161,15 +160,15 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
     public String visitConditionNotEqual(AutoScriptParser.ConditionNotEqualContext ctx){
         String left = String.valueOf(this.visit(ctx.left));
         String right = String.valueOf(this.visit(ctx.right));
-         System.out.println("Left " +ctx.left.getText() +  "->"+ left);
-         System.out.println("Right " + ctx.right.getText() + "->"+ right);
+        //  System.out.println("Left " +ctx.left.getText() +  "->"+ left);
+        //  System.out.println("Right " + ctx.right.getText() + "->"+ right);
         return String.valueOf(!left.equals(right));
     }
 
     @Override
     public String visitTerminal(TerminalNode node) {
        int lineNumber = node.getSymbol().getLine();
-        System.out.println("Line: " + lineNumber);
+        //System.out.println("Line: " + lineNumber);
         return "";
     }
 
@@ -177,7 +176,6 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
     public String visitWhileStatement(AutoScriptParser.WhileStatementContext ctx){
         symbols.createScope();
         while(Boolean.parseBoolean(this.visit(ctx.condition()))){
-            System.out.println("in");
             for(int i = 0; i < ctx.body().size(); i++){
                 this.visit(ctx.body(i));
             }
@@ -414,7 +412,7 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
                     this.visit(ctx.singleExpression()!= null? ctx.singleExpression() : ctx.functionCall())
             ));
         }
-        System.out.println("Assignment:" + varName + "->" + symbols.lookup(varName).getValue());
+        // System.out.println("Assignment:" + varName + "->" + symbols.lookup(varName).getValue());
         return String.valueOf(symbols.lookup(varName).getValue());
     }
 

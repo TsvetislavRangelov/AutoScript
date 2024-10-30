@@ -1,0 +1,43 @@
+integer count = 0; 
+boolean isSeven = false;
+
+const daysOfWeek: integer = ()=>{
+    return 7; 
+};
+
+integer days = daysOfWeek();
+print("days " + days);
+
+print("count before while loop: " + count);
+while(count < days){
+    count = count + 1; 
+};
+print("count after while loop: " + count);
+
+if (count == days){
+    isSeven = true;
+};
+print("isSeven: " + isSeven);
+
+
+boolean isMonday = false; 
+
+if(isMonday == false && isSeven){
+    print("inside the if statement");
+    boolean isMonday = true; 
+};
+
+print("isMonday: " + isMonday);
+
+
+:) demo - void/type checking; duplicate functions
+
+const incrementCount: void =()=>{
+    count = count + 1;
+};
+
+print("count before increment: " + count);
+incrementCount();
+print("count after increment: " + count);
+
+:)const incrementCount: void = ()=>{};
