@@ -356,7 +356,7 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
 
     private String assignVariableToExpression(String varName,
                                               AutoScriptParser.AssignmentExpressionContext ctx){
-        if(symbols.containsKey(varName)) {
+            if(symbols.containsKey(varName) && ctx.TYPE() == null) {
             Symbol symbol = symbols.lookup(varName);
             String parseTreeRes = ""; 
             if(ctx.singleExpression() != null){

@@ -17,15 +17,15 @@ integer one = 2;
 const shit: boolean = ()=>{
     integer one = 1; 
     return true;
-}
+};
 
 boolean test = shit();
 
-const fuck: integer = () =>{
-    return 9;
-};
-
-integer pls = fuck();
+:)const fuck: integer = () =>{
+:)    return 9;
+:)};
+:)
+:)integer pls = fuck();
 
 :) scop demonstration 
 :)integer one = 1; 
@@ -34,6 +34,7 @@ integer pls = fuck();
 :)    integer one = 2; 
 :)};
 :)
+
 if(one == 2){
     string yes = "yes";
 }; 
