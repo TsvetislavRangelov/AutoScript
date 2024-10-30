@@ -1,5 +1,4 @@
 import org.antlr.v4.runtime.misc.ParseCancellationException;
-import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.Locale;
 
@@ -160,8 +159,6 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
     public String visitConditionAnd(AutoScriptParser.ConditionAndContext ctx){
         boolean left = Boolean.parseBoolean(this.visit(ctx.left));
         boolean right = Boolean.parseBoolean(this.visit(ctx.right));
-        //  System.out.println("Left " +ctx.left.getText() +  "->"+ left);
-        //  System.out.println("Right " + ctx.right.getText() + "->"+ right);
         return String.valueOf(left && right);
     }
 
@@ -169,8 +166,6 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
     public String visitConditionOr(AutoScriptParser.ConditionOrContext ctx){
         boolean left = Boolean.parseBoolean(this.visit(ctx.left));
         boolean right = Boolean.parseBoolean(this.visit(ctx.right));
-        //  System.out.println("Left " +ctx.left.getText() +  "->"+ left);
-        //  System.out.println("Right " + ctx.right.getText() + "->"+ right);
         return String.valueOf(left || right);
     }
 
@@ -178,8 +173,6 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
     public String visitConditionStrictEqual(AutoScriptParser.ConditionStrictEqualContext ctx){
         String left = String.valueOf(this.visit(ctx.left));
         String right = String.valueOf(this.visit(ctx.right));
-        // System.out.println("Left " + ctx.left.getText() +  "->"+ left);
-        // System.out.println("Right " + ctx.right.getText() + "->"+ right);
         return String.valueOf(left.equals(right));
     }
     @Override
@@ -191,16 +184,7 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
     public String visitConditionNotEqual(AutoScriptParser.ConditionNotEqualContext ctx){
         String left = String.valueOf(this.visit(ctx.left));
         String right = String.valueOf(this.visit(ctx.right));
-        //  System.out.println("Left " +ctx.left.getText() +  "->"+ left);
-        //  System.out.println("Right " + ctx.right.getText() + "->"+ right);
         return String.valueOf(!left.equals(right));
-    }
-
-    @Override
-    public String visitTerminal(TerminalNode node) {
-       int lineNumber = node.getSymbol().getLine();
-        //System.out.println("Line: " + lineNumber);
-        return "";
     }
 
     @Override
@@ -447,7 +431,6 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
                             ctx.functionCall() != null ? ctx.functionCall() : ctx.collectionIndex())
             ));
         }
-        // System.out.println("Assignment:" + varName + "->" + symbols.lookup(varName).getValue());
         return String.valueOf(symbols.lookup(varName).getValue());
     }
 
