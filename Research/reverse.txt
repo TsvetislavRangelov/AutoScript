@@ -2,14 +2,22 @@ integer length = 10;
 integer[] array = [length];
 
 :) Allocating memory for the array.
+print("Initial array order is :")
 for(integer i = 0, i < length, i = i + 1) {
     array[i] = i;
+    print(array[i]);
 }
 
+:) reverses the order of the elements within the array
 for(integer k = 0, k < (length / 2), k = k + 1) {
    integer temp = array[k];
    array[k] = array[length - 1 - k];
    array[length - 1 - k] = temp;
+};
+
+print("Final array order is: ")
+for(integer j = 0, j < length, j = j + 1){
+    print(array[j]);
 };
 
 
