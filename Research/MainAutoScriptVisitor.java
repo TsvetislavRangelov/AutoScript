@@ -74,7 +74,7 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
     // TODO: Functions
     @Override
     public String visitIfStatement(AutoScriptParser.IfStatementContext ctx){
-        SymbolTable localScope = symbols.createScope();
+        symbols.createScope();
         for (int i=0; i < ctx.condition().size(); i++){
             boolean condition = Boolean.parseBoolean(this.visit(ctx.condition(i)));
             System.out.println("Condition " + ctx.condition(i).getText() + "->" +  condition);
@@ -86,7 +86,7 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
                 break;
             }
         }
-        localScope.free();
+        symbols.free();
         return "";
     }
 
@@ -165,27 +165,27 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
 
     @Override
     public String visitWhileStatement(AutoScriptParser.WhileStatementContext ctx){
-        SymbolTable localScope = symbols.createScope();
+        symbols.createScope();
         while(Boolean.parseBoolean(this.visit(ctx.condition()))){
             System.out.println("in");
             for(int i = 0; i < ctx.body().size(); i++){
                 this.visit(ctx.body(i));
             }
         }
-        localScope.free();
+        symbols.free();
         return "";
     }
 
 
     @Override
     public String visitForStatement(AutoScriptParser.ForStatementContext ctx) {
-        SymbolTable localScope = symbols.createScope();
+        symbols.createScope();
         for(this.visit(ctx.assignmentExpression(0)); Boolean.parseBoolean(this.visit(ctx.condition())); this.visit(ctx.assignmentExpression(1))){
             for(int i = 0; i < ctx.body().size(); i++){
                 this.visit(ctx.body(i));
             }
         } 
-        localScope.free();
+        symbols.free();
         return "";
     }
 
@@ -202,6 +202,17 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
     @Override
     public String visitGreater_Than(AutoScriptParser.Greater_ThanContext ctx){
         return String.valueOf(evalGreaterOrLessThan(ctx, null));
+    }
+
+    @Override
+    public String visitReturnStatement(AutoScriptParser.ReturnStatementContext ctx) { 
+        String res = ""; 
+        if (ctx.singleExpression() != null){
+            res = String.valueOf(this.visit(ctx.singleExpression()));
+        }else if (ctx.NULL() != null){
+            res = "null";
+        }
+        return res;
     }
 
     @Override
@@ -269,22 +280,43 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
 
     @Override
     public String visitFunctionCall(AutoScriptParser.FunctionCallContext ctx){
-        return "";
+        String id = ctx.ID().getText();
+        if(!symbols.containsKey(id)) {
+            throw new ParseCancellationException("Function is not declared");
+        }
+        Symbol symbol = symbols.lookup(id);
+        
+        return this.visitFunctionBody((AutoScriptParser.FunctionBodyContext)symbol.getValue());
     }
 
     @Override
     public String visitArrowFunction(AutoScriptParser.ArrowFunctionContext ctx){
-        SymbolTable localScope = symbols.createScope();
-        if(ctx.TYPE() != null && ctx.returnStatement() == null){
-            throw new ParseCancellationException("Invalid function. Must return a statement of type " + ctx.TYPE().getText());
+        String id = ctx.functionDeclaration().ID().getText();
+        if(symbols.containsKey(id)) {
+            throw new ParseCancellationException("Function with the same name already exist");
         }
-        if(ctx.VOID() != null && ctx.returnStatement() != null){
-            throw new ParseCancellationException("Invalid function. Function is of type void, can not use return");
-        }
-
-        localScope.free();
-
+        String type = Type.FUNCTION.toString();
+        symbols.insert(id, new Symbol(
+            symbols.hasParent() ? Scope.LOCAL : Scope.GLOBAL,
+            id,
+            Type.valueOf(type.toUpperCase(Locale.ROOT)),
+            ctx.functionBody()
+        ));
         return "";
+    }
+
+    @Override
+    public String visitFunctionBody(AutoScriptParser.FunctionBodyContext ctx){
+        String res = "";
+        symbols.createScope();
+        for(int i = 0; i< ctx.bodyList().size(); i++){
+            this.visit(ctx.bodyList(i));
+        }
+        if(ctx.returnStatement() != null){
+            res = this.visitReturnStatement(ctx.returnStatement());
+        }
+        symbols.free();
+        return res;
     }
 
     private String assignVariableToCollection(String varName,
@@ -326,7 +358,12 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
                                               AutoScriptParser.AssignmentExpressionContext ctx){
         if(symbols.containsKey(varName)) {
             Symbol symbol = symbols.lookup(varName);
-            String parseTreeRes = this.visit(ctx.singleExpression());
+            String parseTreeRes = ""; 
+            if(ctx.singleExpression() != null){
+                parseTreeRes = this.visit(ctx.singleExpression());
+            }else{
+                parseTreeRes = this.visit(ctx.functionCall());
+            }
             Type varType = symbol.getType();
             // Strings can not be reassigned
             if (varType == Type.BOOLEAN && !parseTreeRes.matches("true|false")) {
@@ -344,6 +381,9 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
                             String.valueOf(symbol.getType()).toLowerCase(Locale.ROOT));
                 }
             }
+            else if (varType == Type.STRING){
+                throw new ParseCancellationException("Strings are immutable. Variable can not be reassigned " + varName );
+            }
             symbol.setValue(parseTreeRes);
             symbols.update(varName, symbol);
         }
@@ -353,7 +393,7 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
                     symbols.hasParent() ? Scope.LOCAL : Scope.GLOBAL,
                     varName,
                     Type.valueOf(type.toUpperCase(Locale.ROOT)),
-                    this.visit(ctx.singleExpression())
+                    this.visit(ctx.singleExpression()!= null? ctx.singleExpression() : ctx.functionCall())
             ));
         }
         System.out.println("Assignment:" + varName + "->" + symbols.lookup(varName).getValue());

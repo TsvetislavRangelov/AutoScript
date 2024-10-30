@@ -17,7 +17,7 @@ singleExpression:   NUMBER_LITERAL # Number |
 		            left=singleExpression operator=(TIMES | SLASH) right=singleExpression # MultiplicationDivision |
 		            left=singleExpression operator=(MINUS | PLUS) right=singleExpression # AdditionSubtraction ; 	  // this rule is left recursive
 
-assignmentExpression: TYPE? ID EQUALS (singleExpression);
+assignmentExpression: 	TYPE? ID EQUALS (singleExpression | functionCall);
 
 
 collectionIndexAssignment: collectionIndex EQUALS singleExpression;
@@ -26,17 +26,19 @@ collectionAssignment: TYPE '[]' ID EQUALS '[' singleExpression ']';
 
 
 ifStatement: 		IF OPENING_BRACKET condition CLOSING_BRACKET 
-						OPENING_CURLY_BRACKET bodyList CLOSING_CURLY_BRACKET
+					OPENING_CURLY_BRACKET bodyList CLOSING_CURLY_BRACKET
 					(ELSE IF OPENING_BRACKET condition CLOSING_BRACKET
-						OPENING_CURLY_BRACKET bodyList CLOSING_CURLY_BRACKET)*
+					OPENING_CURLY_BRACKET bodyList CLOSING_CURLY_BRACKET)*
 					(ELSE OPENING_CURLY_BRACKET bodyList CLOSING_CURLY_BRACKET)?;
 
 
 whileStatement: 	WHILE OPENING_BRACKET condition CLOSING_BRACKET 
 					OPENING_CURLY_BRACKET body+ CLOSING_CURLY_BRACKET;	
 
-forStatement: 		FOR OPENING_BRACKET assignmentExpression COMMA condition COMMA assignmentExpression
-					CLOSING_BRACKET OPENING_CURLY_BRACKET body+ CLOSING_CURLY_BRACKET;
+forStatement: 		FOR OPENING_BRACKET assignmentExpression COMMA 
+					condition COMMA assignmentExpression
+					CLOSING_BRACKET OPENING_CURLY_BRACKET body+ 
+					CLOSING_CURLY_BRACKET;
 
 condition:      ID # ConditionID| 
 				singleExpression #ConditionExpr|
@@ -47,10 +49,16 @@ condition:      ID # ConditionID|
 				left=condition operator=AND right=condition # ConditionAnd |
 				left=condition operator=OR right=condition  # ConditionOr;
 
-returnStatement: (RETURN (singleExpression | NULL)) + LINE_SEPARATOR; 
+returnStatement: RETURN (singleExpression | NULL) LINE_SEPARATOR; 
 
-arrowFunction: CONST ID ':' (TYPE | VOID) EQUALS OPENING_BRACKET paramSequence? CLOSING_BRACKET ARROW 
-				OPENING_CURLY_BRACKET bodyList* returnStatement? CLOSING_CURLY_BRACKET;
+arrowFunction: 	functionDeclaration functionBody; 
+
+functionDeclaration: CONST ID ':' (TYPE | VOID) EQUALS OPENING_BRACKET paramSequence?
+					CLOSING_BRACKET ARROW;
+
+functionBody: OPENING_CURLY_BRACKET bodyList* 
+				returnStatement? CLOSING_CURLY_BRACKET;
+
 
 functionCall: ID OPENING_BRACKET functionInputSequence? CLOSING_BRACKET;
 

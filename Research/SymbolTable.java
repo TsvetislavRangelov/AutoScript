@@ -5,6 +5,8 @@ import java.util.HashMap;
  */
 public class SymbolTable {
     private final HashMap<String, Symbol> symbols;
+    private final HashMap<String, Symbol> localSymbols;
+
     // we want to be aware of which scope the symbol table is for.
     // if we are in the global scope, then the symbol table's parent will be null.
     // if we are in a local scope, then the symbol table will always have a parent, which
@@ -15,12 +17,15 @@ public class SymbolTable {
     //sym = oldSym
     //return returnObj
     private SymbolTable parent = null;
+    private SymbolTable localScope = null;
+
 
     /**
      * C`tor.
      */
     public SymbolTable() {
         symbols = new HashMap<>();
+        localSymbols = new HashMap<>();
     }
 
     /**
@@ -30,7 +35,11 @@ public class SymbolTable {
      * @param symbol     Symbol information, such as type, name, value etc.
      */
     public void insert(String identifier, Symbol symbol){
-        symbols.put(identifier, symbol);
+        if(localScope == null){
+            symbols.put(identifier, symbol);
+        }else{
+            localSymbols.put(identifier, symbol);
+        }
     }
 
     /**
@@ -40,7 +49,14 @@ public class SymbolTable {
      * @param symbol     The new symbol information.
      */
     public void update(String identifier, Symbol symbol){
-        symbols.replace(identifier, symbol);
+        if(localScope == null){
+            symbols.replace(identifier, symbol);
+        }else if(localSymbols.get(identifier) != null){
+            localSymbols.replace(identifier, symbol);
+        }
+        else{
+            symbols.replace(identifier, symbol);
+        }
     }
 
     /**
@@ -49,7 +65,16 @@ public class SymbolTable {
      * @return The value associated with the provided key, otherwise null.
      */
     public Symbol lookup(String identifier){
-        return symbols.get(identifier);
+        if(localScope == null){
+            return symbols.get(identifier);
+        }else{
+            if(localSymbols.get(identifier) != null){
+                return localSymbols.get(identifier);
+            }
+            else{
+                return symbols.get(identifier);
+            }
+        }
     }
 
     /**
@@ -58,14 +83,21 @@ public class SymbolTable {
      * @return true if the key exists, false otherwise.
      */
     public boolean containsKey(String identifier){
-        return symbols.containsKey(identifier);
+        if(localScope == null){
+            return symbols.containsKey(identifier);
+        }else {
+            return symbols.containsKey(identifier) || localSymbols.containsKey(identifier);
+        }
     }
 
     /**
      * Removes all entries and frees storage of the symbol table.
      */
     public void free (){
-        symbols.clear();
+        if(localScope!= null){
+            localSymbols.clear();
+            localScope = null; 
+        }
     }
 
     public void setParent(SymbolTable parent){
@@ -81,8 +113,8 @@ public class SymbolTable {
      * @return the new scope.
      */
     public SymbolTable createScope(){
-        SymbolTable newScope = new SymbolTable();
-        newScope.setParent(this);
-        return newScope;
+        localScope = new SymbolTable();
+        localScope.setParent(this);
+        return localScope;
     }
 }

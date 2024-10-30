@@ -6,7 +6,8 @@ public enum Type {
     INTEGER_ARRAY("integer[]"),
     CHARACTER_ARRAY("character[]"),
     BOOLEAN_ARRAY("boolean[]"),
-    STRING_ARRAY("boolean[]");
+    STRING_ARRAY("boolean[]"),
+    FUNCTION("function");
 
     public final String label;
 
