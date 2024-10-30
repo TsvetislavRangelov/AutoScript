@@ -7,15 +7,70 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
     private final SymbolTable symbols = new SymbolTable();
 
     // TODO: ARRAYS
-//    @Override
-//    public String visitCollectionAssignment(AutoScriptParser.CollectionAssignmentContext ctx) {
-//        String identifier = ctx.ID().getText();
-//        if(symbols.containsKey(identifier)) {
-//            Symbol prevValue = symbols.lookup(identifier);
-//
-//        }
-//
-//    }
+    @Override
+    public String visitCollectionAssignment(AutoScriptParser.CollectionAssignmentContext ctx) {
+        return assignVariableToCollection(ctx.ID().getText(), ctx);
+    }
+
+    @Override
+    public String visitCollectionIndexAssignment(AutoScriptParser.CollectionIndexAssignmentContext ctx) {
+        String identifier = ctx.collectionIndex().ID().getText();
+        int index = Integer.parseInt(this.visit(ctx.collectionIndex().singleExpression()));
+        if(symbols.containsKey(identifier)) {
+            Symbol arrayData = symbols.lookup(identifier);
+            if(arrayData.getType().equals(Type.INTEGER_ARRAY)){
+                int val = Integer.parseInt(this.visit(ctx.singleExpression()));
+                int[] intArray = (int[]) arrayData.getValue();
+                intArray[index] = val;
+            }
+            else if(arrayData.getType().equals(Type.STRING_ARRAY)){
+                String val = this.visit(ctx.collectionIndex().singleExpression());
+                String[] strArray = (String[]) arrayData.getValue();
+                strArray[index] = val;
+            }
+            else if(arrayData.getType().equals(Type.BOOLEAN_ARRAY)){
+                boolean val = Boolean.parseBoolean(this.visit(ctx.collectionIndex().singleExpression()));
+                boolean[] strArray = (boolean[]) arrayData.getValue();
+                strArray[index] = val;
+            }
+            else if(arrayData.getType().equals(Type.CHARACTER_ARRAY)){
+                char val = ctx.singleExpression().getText().charAt(0);
+                char[] strArray = (char[]) arrayData.getValue();
+                strArray[index] = val;
+            }
+        }
+        return "";
+    }
+
+    @Override
+    public String visitCollectionIndex(AutoScriptParser.CollectionIndexContext ctx) {
+        String identifier = ctx.ID().getText();
+        int index = Integer.parseInt(this.visit(ctx.singleExpression()));
+        if(symbols.containsKey(identifier)) {
+            Symbol arrayData = symbols.lookup(identifier);
+            if(arrayData.getType().equals(Type.INTEGER_ARRAY)){
+                int[] intArray = (int[])arrayData.getValue();
+                System.out.println("Array element at index " + index + " is " + intArray[index]);
+                return String.valueOf(intArray[index]);
+            }
+            if(arrayData.getType().equals(Type.CHARACTER_ARRAY)){
+                char[] charArray = (char[])arrayData.getValue();
+                System.out.println("Array element at index " + index + " is " + charArray[index]);
+                return String.valueOf(charArray[index]);
+            }
+            if(arrayData.getType().equals(Type.BOOLEAN_ARRAY)){
+                boolean[] booleanArray = (boolean[])arrayData.getValue();
+                System.out.println("Array element at index " + index + " is " + booleanArray[index]);
+                return String.valueOf(booleanArray[index]);
+            }
+            if(arrayData.getType().equals(Type.STRING_ARRAY)){
+                String[] stringArray = (String[])arrayData.getValue();
+                System.out.println("Array element at index " + index + " is " + stringArray[index]);
+                return String.valueOf(stringArray[index]);
+            }
+        }
+        return null;
+    }
     // TODO: Functions
     @Override
     public String visitIfStatement(AutoScriptParser.IfStatementContext ctx){
@@ -155,14 +210,6 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
         if(symbols.containsKey(result)){
             Symbol symbol = symbols.lookup(result);
             result = String.valueOf(symbol.getValue());
-
-            //TODO: this is also done at visitString, removing it here, does not change anything
-            // if (Objects.requireNonNull(symbol.getType()) == Type.STRING){
-                // String val = (String) symbol.getValue();
-                // result = val.replace("\"", "");
-            // } 
-            // else {
-            // }
         }
         else {
             throw new
@@ -240,7 +287,43 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
         return "";
     }
 
-    private String assignVariableToExpression(String varName, AutoScriptParser.AssignmentExpressionContext ctx){
+    private String assignVariableToCollection(String varName,
+                                              AutoScriptParser.CollectionAssignmentContext ctx){
+        if(symbols.containsKey(varName)){
+            throw new ParseCancellationException("Array " + varName + "is immutable.");
+        }
+
+        int arraySize = Integer.parseInt(this.visit(ctx.singleExpression()));
+        Type arrayType = Type.stringToTypedArray(ctx.TYPE().getText());
+        if(arrayType == null){
+            throw new ParseCancellationException("Missing type for array " + varName);
+        }
+
+        if(arrayType.equals(Type.INTEGER_ARRAY)){
+            symbols.insert(varName, new Symbol(Scope.GLOBAL, varName,
+                    arrayType,
+                    new int[arraySize]));
+        }
+        else if(arrayType.equals(Type.STRING_ARRAY)){
+            symbols.insert(varName, new Symbol(Scope.GLOBAL, varName,
+                    arrayType,
+                    new String[arraySize]));
+        }
+        else if(arrayType.equals(Type.BOOLEAN_ARRAY)){
+            symbols.insert(varName, new Symbol(Scope.GLOBAL, varName,
+                    arrayType,
+                    new boolean[arraySize]));
+        }
+        else if(arrayType.equals(Type.CHARACTER_ARRAY)){
+            symbols.insert(varName, new Symbol(Scope.GLOBAL, varName,
+                    arrayType,
+                    new char[arraySize]));
+        }
+        return "";
+    }
+
+    private String assignVariableToExpression(String varName,
+                                              AutoScriptParser.AssignmentExpressionContext ctx){
         if(symbols.containsKey(varName)) {
             Symbol symbol = symbols.lookup(varName);
             String parseTreeRes = this.visit(ctx.singleExpression());

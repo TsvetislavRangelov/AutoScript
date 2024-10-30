@@ -2,7 +2,7 @@ grammar AutoScript;
 
 // Parser Rules
 
-entry: ((singleExpression | assignmentExpression | collectionAssignment | ifStatement | whileStatement | forStatement | arrowFunction | functionCall) + LINE_SEPARATOR)+ | EOF;
+entry: ((singleExpression | assignmentExpression | collectionAssignment | ifStatement | whileStatement | forStatement | arrowFunction | functionCall | collectionIndex | collectionIndexAssignment) + LINE_SEPARATOR)+ | EOF;
 
 singleExpression:   NUMBER_LITERAL # Number |
                     STRING_LITERAL # String |
@@ -19,7 +19,10 @@ singleExpression:   NUMBER_LITERAL # Number |
 
 assignmentExpression: TYPE? ID EQUALS (singleExpression);
 
-collectionAssignment: TYPE '[]' ID EQUALS ('[' (NUMBER_LITERAL (COMMA NUMBER_LITERAL)* | STRING_LITERAL (COMMA STRING_LITERAL)* | CHARACTER_LITERAL (COMMA CHARACTER_LITERAL)* | BOOLEAN_LITERAL (COMMA BOOLEAN_LITERAL)*) ']' | '[]');
+
+collectionIndexAssignment: collectionIndex EQUALS singleExpression;
+collectionIndex: ID '[' singleExpression ']';
+collectionAssignment: TYPE '[]' ID EQUALS '[' singleExpression ']';
 
 
 ifStatement: 		IF OPENING_BRACKET condition CLOSING_BRACKET 
@@ -56,7 +59,7 @@ functionInputSequence: functionInput (COMMA functionInput)*;
 functionInput: (BOOLEAN_LITERAL | CHARACTER_LITERAL | STRING_LITERAL | NUMBER_LITERAL | 
 				ID | singleExpression); 
 bodyList: body+;
-body: (singleExpression | assignmentExpression | ifStatement | whileStatement | forStatement) LINE_SEPARATOR; 
+body: (singleExpression | assignmentExpression | ifStatement | whileStatement | forStatement | collectionIndexAssignment | collectionIndex) LINE_SEPARATOR;
 
 paramSequence: param (COMMA param)*;
 
