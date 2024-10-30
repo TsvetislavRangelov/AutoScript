@@ -1,4 +1,3 @@
-import org.antlr.v4.parse.ANTLRParser.throwsSpec_return;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
@@ -7,7 +6,17 @@ import java.util.Locale;
 public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
     private final SymbolTable symbols = new SymbolTable();
 
-    // TODO: ARRAYS
+    @Override
+    public String visitPrint(AutoScriptParser.PrintContext ctx) {
+        if(ctx.singleExpression() != null){
+            Utils.Log(this.visit(ctx.singleExpression()));
+        }
+        else{
+            Utils.Log(this.visit(ctx.collectionIndex()));
+        }
+        return "";
+    }
+
     @Override
     public String visitCollectionAssignment(AutoScriptParser.CollectionAssignmentContext ctx) {
         return assignVariableToCollection(ctx.ID().getText(), ctx);
@@ -367,7 +376,7 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
                                               AutoScriptParser.AssignmentExpressionContext ctx){
             if(symbols.containsKey(varName) && ctx.TYPE() == null) {
             Symbol symbol = symbols.lookup(varName);
-            String parseTreeRes = ""; 
+            String parseTreeRes;
             if(ctx.singleExpression() != null){
                 parseTreeRes = this.visit(ctx.singleExpression());
             }else{

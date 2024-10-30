@@ -2,8 +2,9 @@ grammar AutoScript;
 
 // Parser Rules
 
-entry: ((singleExpression | assignmentExpression | collectionAssignment | ifStatement | whileStatement | forStatement | arrowFunction | functionCall | collectionIndex | collectionIndexAssignment) + LINE_SEPARATOR)+ | EOF;
+entry: ((singleExpression | assignmentExpression | collectionAssignment | ifStatement | whileStatement | forStatement | arrowFunction | functionCall | collectionIndex | collectionIndexAssignment | print) + LINE_SEPARATOR)+ | EOF;
 
+print: 'print'  '(' (singleExpression | collectionIndex) ')';
 singleExpression:   NUMBER_LITERAL # Number |
                     STRING_LITERAL # String |
                     CHARACTER_LITERAL # Character |
@@ -20,10 +21,10 @@ singleExpression:   NUMBER_LITERAL # Number |
 assignmentExpression: 	TYPE? ID EQUALS (singleExpression | functionCall);
 
 
+
 collectionIndexAssignment: collectionIndex EQUALS singleExpression;
 collectionIndex: ID '[' singleExpression ']';
 collectionAssignment: TYPE '[]' ID EQUALS '[' singleExpression ']';
-
 
 ifStatement: 		IF OPENING_BRACKET condition CLOSING_BRACKET 
 					OPENING_CURLY_BRACKET bodyList CLOSING_CURLY_BRACKET

@@ -9,3 +9,10 @@ if(poo){
     a = 7;
     b = 3;
 };
+
+integer[] nums = [10];
+for(integer i = 0, i < 10, i = i + 1){
+    nums[i] = i + 1;
+};
+
+print(nums[3]);
