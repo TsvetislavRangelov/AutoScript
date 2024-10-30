@@ -38,3 +38,10 @@ boolean test = shit();
 if(one == 2){
     string yes = "yes";
 }; 
+
+
+const hi:integer = () =>{
+    integer i = 6;
+};
+
+hi();

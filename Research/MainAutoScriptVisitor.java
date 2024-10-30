@@ -1,3 +1,4 @@
+import org.antlr.v4.parse.ANTLRParser.throwsSpec_return;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
@@ -292,6 +293,14 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
     @Override
     public String visitArrowFunction(AutoScriptParser.ArrowFunctionContext ctx){
         String id = ctx.functionDeclaration().ID().getText();
+        if(ctx.functionDeclaration().TYPE() != null && ctx.functionBody().returnStatement() == null){
+            throw new ParseCancellationException("Function must return a statement");
+        }
+    
+        if(ctx.functionDeclaration().VOID() != null && ctx.functionBody().returnStatement() != null){
+            throw new ParseCancellationException("Function is void, can not return statement");
+        }
+
         if(symbols.containsKey(id)) {
             throw new ParseCancellationException("Function with the same name already exist");
         }
