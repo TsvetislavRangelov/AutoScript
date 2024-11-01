@@ -15,6 +15,11 @@ public enum Type {
         this.label = label;
     }
 
+    /**
+     * Converts a string to an enum typed array value.
+     * @param arg The string type.
+     * @return One of the array types in Type.
+     */
     public static Type stringToTypedArray(String arg){
         for(Type type : Type.values()){
             if(arg.equals(String.valueOf(type.label))){

@@ -1,5 +1,4 @@
 import org.antlr.v4.runtime.misc.ParseCancellationException;
-import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.Locale;
 
@@ -181,12 +180,6 @@ public class MainAutoScriptVisitor extends AutoScriptBaseVisitor<String> {
         String left = String.valueOf(this.visit(ctx.left));
         String right = String.valueOf(this.visit(ctx.right));
         return String.valueOf(!left.equals(right));
-    }
-
-    @Override
-    public String visitTerminal(TerminalNode node) {
-       int lineNumber = node.getSymbol().getLine();
-        return "";
     }
 
     @Override

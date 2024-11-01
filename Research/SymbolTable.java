@@ -6,16 +6,6 @@ import java.util.HashMap;
 public class SymbolTable {
     private final HashMap<String, Symbol> symbols;
     private final HashMap<String, Symbol> localSymbols;
-
-    // we want to be aware of which scope the symbol table is for.
-    // if we are in the global scope, then the symbol table's parent will be null.
-    // if we are in a local scope, then the symbol table will always have a parent, which
-    // will eventually reach up to the global scope.
-    //var oldSym = symbols
-    //symbols = oldSym.createScope()
-    //var returnObj = visitChildren(ctx)
-    //sym = oldSym
-    //return returnObj
     private SymbolTable parent = null;
     private SymbolTable localScope = null;
 
@@ -35,9 +25,10 @@ public class SymbolTable {
      * @param symbol     Symbol information, such as type, name, value etc.
      */
     public void insert(String identifier, Symbol symbol){
-        if(localScope == null){
+        if (localScope == null) {
             symbols.put(identifier, symbol);
-        }else{
+        }
+        else {
             localSymbols.put(identifier, symbol);
         }
     }
@@ -49,12 +40,14 @@ public class SymbolTable {
      * @param symbol     The new symbol information.
      */
     public void update(String identifier, Symbol symbol){
-        if(localScope == null){
+        if (localScope == null) {
             symbols.replace(identifier, symbol);
-        }else if(localSymbols.get(identifier) != null){
+        }
+        else if (localSymbols.get(identifier) != null) {
             localSymbols.replace(identifier, symbol);
         }
-        else{
+        else
+        {
             symbols.replace(identifier, symbol);
         }
     }
@@ -68,7 +61,7 @@ public class SymbolTable {
         if(localScope == null){
             return symbols.get(identifier);
         }else{
-            if(localSymbols.get(identifier) != null){
+            if (localSymbols.get(identifier) != null){
                 return localSymbols.get(identifier);
             }
             else{
@@ -83,7 +76,7 @@ public class SymbolTable {
      * @return true if the key exists, false otherwise.
      */
     public boolean containsKey(String identifier){
-        if(localScope == null){
+        if (localScope == null) {
             return symbols.containsKey(identifier);
         }else {
             return symbols.containsKey(identifier) || localSymbols.containsKey(identifier);
@@ -94,7 +87,7 @@ public class SymbolTable {
      * Removes all entries and frees storage of the symbol table.
      */
     public void free (){
-        if(localScope!= null){
+        if (localScope != null) {
             localSymbols.clear();
             localScope = null; 
         }
