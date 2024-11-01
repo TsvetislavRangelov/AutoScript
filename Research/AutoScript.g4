@@ -4,7 +4,7 @@ grammar AutoScript;
 
 entry: ((singleExpression | assignmentExpression | collectionAssignment | ifStatement | whileStatement | forStatement | arrowFunction | functionCall | collectionIndex | collectionIndexAssignment | print) + LINE_SEPARATOR)+ | EOF;
 
-print: 'print'  '(' (singleExpression | collectionIndex) ')';
+print: 'print'  '(' (singleExpression | collectionIndex | functionCall) ')';
 singleExpression:   NUMBER_LITERAL # Number |
                     STRING_LITERAL # String |
                     CHARACTER_LITERAL # Character |
