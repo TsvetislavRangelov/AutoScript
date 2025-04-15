@@ -31,6 +31,24 @@
 This repository contains the code for AutoScript, a simple programming language developed 
 during the Automata Theory course at FUAS by Tsvetislav Rangelov and Aleksandra Krasteva.
 
+AutoScript is a strongly-typed, multi-paradigm programming language.Sharing lexical similarities with Typescript,
+it supports a lot of the generic procedures available in other languages, such as conditional statements,
+loops, logical operators, numeric arithmetic and typed functions. 
+
+Additionally, it has its own set of differentiating characteristics. Some examples include:
+1. No use of 'any' types for variables or functions.
+2. Only arrow functions (Similar to ES6).
+3. Only types variables.
+4. Typed function parameters.
+5. Mandatory return types on functions.
+
+AutoScript also supports very primitive scoping, in the sense that the scoping depth only goes down to 1 level.
+This in turn means that we only have a local and global scope at any given point of program execution.
+Scoping is implemented via nested symbol tables, where the root symbol table represents the global scope, and
+any (or in this case just one) nested symbol tables represent local scopes (for function bodies, loop bodies etc.).
+
+Some other features include type checks during variable reassignment, type safe arrays, and array indexing.
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### Built With
