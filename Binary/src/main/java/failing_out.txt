@@ -1,4 +1,0 @@
-line 6:4 token recognition error at: '^'
-line 2:2 extraneous input '~' expecting INTEGER
-line 5:0 extraneous input '~' expecting {<EOF>, INTEGER}
-line 6:0 extraneous input '-' expecting {<EOF>, INTEGER}

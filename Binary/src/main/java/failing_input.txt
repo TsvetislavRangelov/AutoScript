@@ -1,6 +1,0 @@
-// Negation after another operation can not be calculated
-6+~3;
-
-// Starting the expression with "~" or "-" is not handled
-~3+6/3;
--6*6^12;
